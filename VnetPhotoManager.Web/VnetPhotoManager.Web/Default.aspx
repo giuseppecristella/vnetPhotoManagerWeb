@@ -16,7 +16,7 @@
                 <div class="form-group">
                     <asp:Button runat="server" Text="Visualizza foto" CssClass="btn btn-default" />
                 </div>
-            </section>
+            </section> 
         </div>
     </div>
 
