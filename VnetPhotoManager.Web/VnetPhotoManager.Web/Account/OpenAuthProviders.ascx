@@ -1,7 +1,7 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="OpenAuthProviders.ascx.cs" Inherits="VnetPhotoManager.Web.Account.OpenAuthProviders" %>
 
 <div id="socialLoginList">
-    <h4>Accedi con Fabook</h4>
+    <h4>Accedi con Facebook</h4>
     <hr />
     <asp:ListView runat="server" ID="providerDetails" ItemType="System.String"
         SelectMethod="GetProviderNames" ViewStateMode="Disabled">
