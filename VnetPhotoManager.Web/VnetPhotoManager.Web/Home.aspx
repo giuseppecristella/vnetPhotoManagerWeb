@@ -10,7 +10,7 @@
                     <h4>Photo Manager Home</h4>
                     <hr />
                </div>
-                <div class="form-group">
+                <div class="form-group"> 
                     <asp:Button runat="server" Text="Inserisci foto" CssClass="btn btn-default" />
                 </div>
                 <div class="form-group">
