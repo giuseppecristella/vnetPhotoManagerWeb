@@ -20,9 +20,10 @@ namespace VnetPhotoManager.Web.Account
             var authservice = new vnetauthenticationservice.AuthenticationService();
             authservice.CreateUser(Email.Text, Password.Text, Email.Text, "a", "b", true, true);
             // Save UserClienti 
-
-            CreateUserClient(clientId, txtClientCode.Text, txtName.Text, txtSurname.Text, "", "", "", "", "", "", txtPhone.Text, Email.Text,
+            
+            var retCreateUser = CreateUserClient(clientId, txtClientCode.Text, txtName.Text, txtSurname.Text, "", "", "", "", "", "", txtPhone.Text, Email.Text,
                 Password.Text, DateTime.Now, true);
+            if (retCreateUser) ltrSuccess.Text = "Utente creato con successo.";
         }
 
         public bool CreateUserClient(int clientId, string codiceStruttura, string nome, string cognome, string indirizzo, string citta, string provincia, string cap,
@@ -36,7 +37,7 @@ namespace VnetPhotoManager.Web.Account
                     command.Parameters.Clear();
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@IDCliente", clientId);
-                    command.Parameters.AddWithValue("@CodiceStruttura", clientId);
+                    command.Parameters.AddWithValue("@CodiceStruttura", txtClientCode.Text);
                     command.Parameters.AddWithValue("@Nome", nome);
                     command.Parameters.AddWithValue("@Cognome", cognome);
                     command.Parameters.AddWithValue("@Indirizzo", indirizzo);

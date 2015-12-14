@@ -34,7 +34,7 @@
                 <asp:RequiredFieldValidator runat="server" ControlToValidate="Email"
                     CssClass="text-danger" ErrorMessage="Il campo email è obbligatorio." />
             </div>
-        </div> 
+        </div>
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="Password" CssClass="col-md-2 control-label">Password</asp:Label>
             <div class="col-md-10">
@@ -70,6 +70,7 @@
             </div>
         </div>
         <asp:Literal runat="server" ID="ltCodeError"></asp:Literal>
+        <asp:Literal runat="server" ID="ltrSuccess"></asp:Literal>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <asp:Button runat="server" OnClick="CreateUser_Click" Text="Registra" CssClass="btn btn-default" />

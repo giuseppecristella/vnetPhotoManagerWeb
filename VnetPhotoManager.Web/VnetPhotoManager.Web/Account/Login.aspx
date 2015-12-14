@@ -46,7 +46,8 @@
                     </div>
                 </div>
                 <p>
-                    <asp:HyperLink runat="server" ID="RegisterHyperLink" ViewStateMode="Disabled">Registra nuovo utente</asp:HyperLink>
+                    <a href="~/Account/Register.aspx">Registra nuovo utente</a>
+                   <%-- <asp:HyperLink runat="server" ID="RegisterHyperLink" ViewStateMode="Disabled">Registra nuovo utente</asp:HyperLink>--%>
                 </p>
                 <p>
                     <%-- Enable this once you have account confirmation enabled for password reset functionality
