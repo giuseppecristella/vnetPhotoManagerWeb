@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <p>
-                    <a href="~/Account/Register.aspx">Registra nuovo utente</a>
+                    <a href="Register.aspx">Registra nuovo utente</a>
                    <%-- <asp:HyperLink runat="server" ID="RegisterHyperLink" ViewStateMode="Disabled">Registra nuovo utente</asp:HyperLink>--%>
                 </p>
                 <p>
