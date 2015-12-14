@@ -15,15 +15,17 @@ namespace VnetPhotoManager.Web.Account
             if (clientId.Equals(0))
             {
                 ltCodeError.Text = "Il Codice Cliente inserito non esiste.";
-                return;
             }
-            var authservice = new vnetauthenticationservice.AuthenticationService();
-            authservice.CreateUser(Email.Text, Password.Text, Email.Text, "a", "b", true, true);
-            // Save UserClienti 
-            
-            var retCreateUser = CreateUserClient(clientId, txtClientCode.Text, txtName.Text, txtSurname.Text, "", "", "", "", "", "", txtPhone.Text, Email.Text,
-                Password.Text, DateTime.Now, true);
-            if (retCreateUser) ltrSuccess.Text = "Utente creato con successo.";
+            else
+            {
+                var authservice = new vnetauthenticationservice.AuthenticationService();
+                authservice.CreateUser(Email.Text, Password.Text, Email.Text, "a", "b", true, true);
+                // Save UserClienti 
+
+                var retCreateUser = CreateUserClient(clientId, txtClientCode.Text, txtName.Text, txtSurname.Text, "", "", "", "", "", "", txtPhone.Text, Email.Text,
+                    Password.Text, DateTime.Now, true);
+                if (retCreateUser) ltrSuccess.Text = "Utente creato con successo.";
+            }
         }
 
         public bool CreateUserClient(int clientId, string codiceStruttura, string nome, string cognome, string indirizzo, string citta, string provincia, string cap,
