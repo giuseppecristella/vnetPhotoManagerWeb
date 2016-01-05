@@ -29,7 +29,7 @@
     </div>
     <br />
     <div class="row">
-        <asp:Panel runat="server" ClientIDMode="Static" id="pnlCrop" class="col-md-12" style="overflow: scroll; display: none">
+        <asp:Panel runat="server" ClientIDMode="Static" id="pnlCrop" class="col-md-12" style="overflow: scroll;">
             <asp:Image ClientIDMode="Static" ID="imgCropped" runat="server" />
             <br />
             <asp:HiddenField ClientIDMode="Static" ID="X" runat="server" />
