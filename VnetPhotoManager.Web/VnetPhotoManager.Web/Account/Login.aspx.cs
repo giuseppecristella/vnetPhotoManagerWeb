@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Web;
-using System.Web.ApplicationServices;
 using System.Web.UI;
-using Microsoft.AspNet.Identity.Owin;
 
 namespace VnetPhotoManager.Web.Account
 {
@@ -12,8 +7,6 @@ namespace VnetPhotoManager.Web.Account
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
-
             //RegisterHyperLink.NavigateUrl = "Register";
             //// Enable this once you have account confirmation enabled for password reset functionality
             ////ForgotPasswordHyperLink.NavigateUrl = "Forgot";
@@ -27,9 +20,7 @@ namespace VnetPhotoManager.Web.Account
 
         protected void LogIn(object sender, EventArgs e)
         {
-            // var authservice = new vnetAuthServiceProxy();
-            //  authservice.
-            // authservice.Login(txtUsername.Text, txtPassword.Text,);
+            Session["UserName"] = txtUsername.Text;
             bool loginResult;
             bool loginResultResponse;
             var authservice = new vnetauthenticationservice.AuthenticationService();

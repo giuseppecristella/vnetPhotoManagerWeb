@@ -20,6 +20,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
         protected void btnCrop_Click(object sender, EventArgs e)
         {
+            if(Session["UploadedImage"] == null) return;
             var imageName = Session["UploadedImage"].ToString();
             var w = Convert.ToInt32(W.Value);
             var h = Convert.ToInt32(H.Value);
