@@ -10,9 +10,9 @@ namespace VnetPhotoManager.Web
             Response.Redirect("~/Account/Login.aspx");
         }
 
-        protected void OnClick(object sender, EventArgs e)
+        protected void btnUploadPhoto_OnClick(object sender, EventArgs e)
         {
-            Response.Redirect("PhotoOrder/Add.aspx");
+            Response.Redirect("~/PhotoOrder/Add.aspx");
         }
     }
 }

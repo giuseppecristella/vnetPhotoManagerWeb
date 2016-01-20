@@ -13,7 +13,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
         private static string _ftpUrl = "46.228.255.118";
         private static string _ftpUser = "user1";
         private static string _ftpPassword = "utente12345";
-        private UserDetailRepository _userDetailRepository;
+        private readonly UserDetailRepository _userDetailRepository;
         private static string _userFolder;
 
 
@@ -29,7 +29,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
                 var userEmail = (string)Session["UserName"];
                 var userDetail = _userDetailRepository.GetUserDetail(userEmail);
-                _userFolder = userDetail.StructureCode + "/" + userDetail.StructureCode;
+                _userFolder = userDetail.StructureCode + "/" + userDetail.StructureCode + "/" + userDetail.UserName.Replace("@", "_");
             }
         }
 
@@ -50,7 +50,13 @@ namespace VnetPhotoManager.Web.PhotoOrder
             pnlCrop.Visible = true;
             btnOrder.Visible = true;
         }
+        protected void btnOrder_OnClick(object sender, EventArgs e)
+        {
+            // Salvo in sessione la cartella ftp dove ho salvato il file
+            Response.Redirect("CreateOrder.aspx");
+        }
 
+        #region Private Methods
         private static void SaveImage(byte[] cropImage, string path, string imageName)
         {
             using (var ms = new MemoryStream(cropImage, 0, cropImage.Length))
@@ -97,6 +103,9 @@ namespace VnetPhotoManager.Web.PhotoOrder
         {
             try
             {
+
+                var areCreatedNewFolder = CreateFtpFolder(userFolder);
+
                 var ftp = WebRequest.Create(new Uri(string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, userFolder, filename))) as FtpWebRequest;
                 if (ftp == null) return;
                 Session["FtpPhotoPath"] = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, userFolder, filename);
@@ -116,10 +125,29 @@ namespace VnetPhotoManager.Web.PhotoOrder
             }
         }
 
-        protected void btnOrder_OnClick(object sender, EventArgs e)
+        private bool CreateFtpFolder(string folderName)
         {
-            // Salvo in sessione la cartella ftp dove ho salvato il file
-            Response.Redirect("CreateOrder.aspx");
-        }
+            var ftp = WebRequest.Create(new Uri(string.Format(@"ftp://{0}/{1}", _ftpUrl, folderName))) as FtpWebRequest;
+            ftp.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
+            ftp.KeepAlive = true;
+            ftp.UseBinary = true;
+            ftp.Method = WebRequestMethods.Ftp.MakeDirectory;
+            try
+            {
+                using (var resp = (FtpWebResponse)ftp.GetResponse())
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        } 
+        #endregion
+
+
     }
+
+
 }

@@ -31,23 +31,6 @@ namespace VnetPhotoManager.Web.PhotoOrder
             BindPaymentTypes(userDetail.StructureCode);
         }
 
-        private void BindPaymentTypes(string structureCode)
-        {
-            ddlPayments.DataSource = _paymentMethodRepository.GetPaymentTypes(structureCode);
-            ddlPayments.DataTextField = "Description";
-            ddlPayments.DataValueField = "PaymentId";
-            ddlPayments.DataBind();
-        }
-
-        private void BindPrintFormats(string userEmail)
-        {
-            var printFormats = _printFormatRepository.GetPhotoPrintFormats(userEmail);
-            ddlPrintFormat.DataSource = printFormats;
-            ddlPrintFormat.DataTextField = "Description";
-            ddlPrintFormat.DataValueField = "ProductId";
-            ddlPrintFormat.DataBind();
-        }
-
         protected void btnCreateOrder_OnClick(object sender, EventArgs e)
         {
             if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
@@ -82,5 +65,24 @@ namespace VnetPhotoManager.Web.PhotoOrder
             Session["OrderNumber"] = orderNum.ToString();
             Response.Redirect("OrderSuccess.aspx");
         }
+
+        #region Private Methods
+        private void BindPaymentTypes(string structureCode)
+        {
+            ddlPayments.DataSource = _paymentMethodRepository.GetPaymentTypes(structureCode);
+            ddlPayments.DataTextField = "Description";
+            ddlPayments.DataValueField = "PaymentId";
+            ddlPayments.DataBind();
+        }
+
+        private void BindPrintFormats(string userEmail)
+        {
+            var printFormats = _printFormatRepository.GetPhotoPrintFormats(userEmail);
+            ddlPrintFormat.DataSource = printFormats;
+            ddlPrintFormat.DataTextField = "Description";
+            ddlPrintFormat.DataValueField = "ProductId";
+            ddlPrintFormat.DataBind();
+        } 
+        #endregion
     }
 }
