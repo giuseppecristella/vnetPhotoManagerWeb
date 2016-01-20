@@ -62,7 +62,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 Code = userDetail.StructureCode,
                 Created = DateTime.Now,
                 Delivered = DateTime.Now,
-                Description = string.Format("Ordine numero xxxx {0} del {1}. Cliente {2} {3}", orderNum, DateTime.Now, userDetail.Name, userDetail.Surname),
+                Description = string.Format("Ordine numero {0} del {1}. Cliente {2} {3}", orderNum, DateTime.Now, userDetail.Name, userDetail.Surname),
                 IdDelivered = false,
                 Note = txtNotes.Text,
                 OrderNumber = orderNum,
