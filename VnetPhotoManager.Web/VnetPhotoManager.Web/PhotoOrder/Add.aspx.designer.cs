@@ -22,6 +22,15 @@ namespace VnetPhotoManager.Web.PhotoOrder {
         protected global::System.Web.UI.WebControls.Button btnCrop;
         
         /// <summary>
+        /// btnOrder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnOrder;
+        
+        /// <summary>
         /// pnlCrop control.
         /// </summary>
         /// <remarks>

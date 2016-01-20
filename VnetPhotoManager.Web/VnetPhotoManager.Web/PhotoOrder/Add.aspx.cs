@@ -4,6 +4,7 @@ using SD = System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Net;
 using System.Web;
+using VnetPhotoManager.Repository;
 
 namespace VnetPhotoManager.Web.PhotoOrder
 {
@@ -12,15 +13,29 @@ namespace VnetPhotoManager.Web.PhotoOrder
         private static string _ftpUrl = "46.228.255.118";
         private static string _ftpUser = "user1";
         private static string _ftpPassword = "utente12345";
+        private UserDetailRepository _userDetailRepository;
+        private static string _userFolder;
+
+
+        public Add()
+        {
+            _userDetailRepository = new UserDetailRepository();
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (!Page.IsPostBack)
+            {
+                if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
+                var userEmail = (string)Session["UserName"];
+                var userDetail = _userDetailRepository.GetUserDetail(userEmail);
+                _userFolder = userDetail.StructureCode + "/" + userDetail.StructureCode;
+            }
         }
 
         protected void btnCrop_Click(object sender, EventArgs e)
         {
-            if(Session["UploadedImage"] == null) return;
+            if (Session["UploadedImage"] == null) return;
             var imageName = Session["UploadedImage"].ToString();
             var w = Convert.ToInt32(W.Value);
             var h = Convert.ToInt32(H.Value);
@@ -29,7 +44,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
             var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
             var cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
-            UploadFileToFtp(cropImage, imageName);
+            UploadFileToFtp(cropImage, imageName, _userFolder);
             SaveImage(cropImage, path, imageName);
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
             pnlCrop.Visible = true;
@@ -77,12 +92,13 @@ namespace VnetPhotoManager.Web.PhotoOrder
             }
         }
 
-        private static void UploadFileToFtp(byte[] file, string filename)
+        private void UploadFileToFtp(byte[] file, string filename, string userFolder)
         {
             try
             {
-                var ftp = WebRequest.Create(new Uri(string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, "001/001", filename))) as FtpWebRequest;
+                var ftp = WebRequest.Create(new Uri(string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, userFolder, filename))) as FtpWebRequest;
                 if (ftp == null) return;
+                Session["FtpPhotoPath"] = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, userFolder, filename);
                 ftp.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
                 ftp.KeepAlive = true;
                 ftp.UseBinary = true;
@@ -97,6 +113,12 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 // Log Exception
                 throw ex;
             }
+        }
+
+        protected void btnOrder_OnClick(object sender, EventArgs e)
+        {
+            // Salvo in sessione la cartella ftp dove ho salvato il file
+            Response.Redirect("CreateOrder.aspx");
         }
     }
 }

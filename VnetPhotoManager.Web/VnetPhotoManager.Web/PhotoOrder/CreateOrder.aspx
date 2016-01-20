@@ -44,7 +44,7 @@
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="ddlPayments" CssClass="col-md-2 control-label"></asp:Label>
             <div class="col-md-10">
-                <asp:Button runat="server" ID="btnCreateOrder" Text="Ordina" CssClass="btn btn-info" />
+                <asp:Button runat="server" ID="btnCreateOrder" Text="Ordina" OnClick="btnCreateOrder_OnClick" CssClass="btn btn-info" />
             </div>
         </div>
     </div>

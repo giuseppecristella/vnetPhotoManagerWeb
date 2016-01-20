@@ -39,7 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UserDetailRepository.cs" />
     <Compile Include="OrderRepository.cs" />
+    <Compile Include="PrintFormatRepository.cs" />
+    <Compile Include="PaymentMethodRepository.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

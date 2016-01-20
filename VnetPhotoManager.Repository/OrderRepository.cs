@@ -2,53 +2,126 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
 using VnetPhotoManager.Domain;
 
 namespace VnetPhotoManager.Repository
 {
-    public class OrderRepository : Repository<PrintFormat>
+    public class OrderRepository : Repository<Order>
     {
         public OrderRepository()
         {
 
         }
-        /// <summary>
-        /// Restituisce la lista dei formati disponibili (Tab. Catalogo)
-        /// </summary>
-        /// <param name="username">Email del cliente</param>
-        public List<PrintFormat> GetPhotoPrintFormats(string userEmail)
+
+        public int SaveOrder(Order order)
+        {
+            object ret;
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+
+                SqlCommand command = new SqlCommand(@"insert into ordini (ID_Pagamento, CodiceCliente, Numero, Codice, SubCodice, Descrizione, Creato, Consegna, Note, Consegnato)
+                    values (@idPagamento, @CodiceCliente, @Numero, @Codice, @SubCodice, @Descrizione, @Creato, @Consegna, @Note, @Consegnato);select @@IDENTITY;", conn);
+
+                command.Parameters.Add("@idPagamento", SqlDbType.VarChar).Value = order.PaymentId;
+                command.Parameters.Add("@CodiceCliente", SqlDbType.VarChar).Value = order.ClientCode;
+                command.Parameters.Add("@Numero", SqlDbType.Int).Value = order.OrderNumber;
+                command.Parameters.Add("@Codice", SqlDbType.VarChar).Value = order.Code;
+                command.Parameters.Add("@SubCodice", SqlDbType.VarChar).Value = order.SubCode;
+                command.Parameters.Add("@Descrizione", SqlDbType.VarChar).Value = order.Description;
+                command.Parameters.Add("@Creato", SqlDbType.SmallDateTime).Value = order.Created;
+                command.Parameters.Add("@Consegna", SqlDbType.SmallDateTime).Value = order.Delivered;
+                command.Parameters.Add("@Note", SqlDbType.VarChar).Value = order.Note;
+                command.Parameters.Add("@Consegnato", SqlDbType.Bit).Value = order.IdDelivered;
+
+                //command.Parameters.Add("@id", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                try
+                {
+                    ret = command.ExecuteScalar();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    conn.Close();
+                    command.Dispose();
+                }
+
+                return Convert.ToInt32(ret);
+            }
+
+        }
+
+        public int SaveOrderDetail(OrderDetail orderDetail)
+        {
+            object ret;
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+
+                SqlCommand command =
+                    new SqlCommand(
+                        @"insert into DettOrdine (ID_Ordine, ID_Catalogo, Percorso, Copie) 
+                        values (@ID_Ordine, @ID_Catalogo, @Percorso, @Copie);select @@IDENTITY;",
+                        conn);
+
+                command.Parameters.Add("@ID_Ordine", SqlDbType.Int).Value = orderDetail.OrderId;
+                command.Parameters.Add("@ID_Catalogo", SqlDbType.Int).Value = orderDetail.ProductId;
+                command.Parameters.Add("@Percorso", SqlDbType.VarChar).Value = orderDetail.FtpPhotoPath;
+                command.Parameters.Add("@Copie", SqlDbType.Int).Value = orderDetail.CopyNumber;
+
+                try
+                {
+                    ret = command.ExecuteScalar();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    conn.Close();
+                    command.Dispose();
+                }
+                return Convert.ToInt32(ret);
+            }
+        }
+
+        public Order GetLastOrder()
         {
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 conn.Open();
 
-                SqlCommand command = new SqlCommand(@"SELECT * FROM USERCLIENTI U INNER JOIN CATALOGO C ON U.CODICESTRUTTURA = C.CODICESTRUTTURA AND U.EMAIL=@email", conn);
-                command.Parameters.Add("@email", SqlDbType.VarChar).Value = userEmail;
+                SqlCommand command = new SqlCommand(@"SELECT top 1 * FROM Ordini order by Numero desc", conn);
 
                 using (SqlDataReader dr = command.ExecuteReader(CommandBehavior.SingleResult))
                 {
-                    var items = new List<PrintFormat>();
+                    var items = new List<Order>();
                     while (dr.Read())
                     {
                         var item = BuildFromRecord(dr);
                         items.Add(item);
                     }
-                    return items;
+                    return items.FirstOrDefault();
                 }
             }
         }
 
-        protected override PrintFormat BuildFromRecord(IDataRecord record)
+        protected override Order BuildFromRecord(IDataRecord record)
         {
-            return new PrintFormat
+            // TODO: completare mapping
+            return new Order
             {
-                // dr.Get<int>("dpkdit");
-                Code = Convert.ToString(record["CodiceStruttura"]),
-                Description = Convert.ToString(record["Descrizione"]),
-                Price = Convert.ToDouble(record["Prezzo"]),
-                ImgThumb = (Byte[])record["Immagine"] 
+                OrderNumber = Convert.ToInt32(record["Numero"])
             };
         }
     }
+
 
 }
