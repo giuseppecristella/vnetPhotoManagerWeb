@@ -11,7 +11,7 @@
                     <hr />
                </div>
                 <div class="form-group"> 
-                    <asp:Button runat="server" Text="Inserisci foto" CssClass="btn btn-default" />
+                    <asp:Button runat="server"  OnClick="OnClick" Text="Inserisci foto" CssClass="btn btn-default" />
                 </div>
                 <div class="form-group">
                     <asp:Button runat="server" Text="Visualizza foto" CssClass="btn btn-default" />
