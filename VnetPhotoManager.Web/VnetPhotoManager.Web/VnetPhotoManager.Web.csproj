@@ -177,6 +177,7 @@
     <Content Include="PhotoOrder\CreateOrder.aspx" />
     <Content Include="PhotoOrder\Images\HtmlPage1.html" />
     <Content Include="PhotoOrder\Images\placeholder.png" />
+    <Content Include="PhotoOrder\OrderSuccess.aspx" />
     <Content Include="PhotoUploader.ashx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -421,6 +422,13 @@
     </Compile>
     <Compile Include="PhotoOrder\CreateOrder.aspx.designer.cs">
       <DependentUpon>CreateOrder.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PhotoOrder\OrderSuccess.aspx.cs">
+      <DependentUpon>OrderSuccess.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PhotoOrder\OrderSuccess.aspx.designer.cs">
+      <DependentUpon>OrderSuccess.aspx</DependentUpon>
     </Compile>
     <Compile Include="PhotoUploader.ashx.cs">
       <DependentUpon>PhotoUploader.ashx</DependentUpon>

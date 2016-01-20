@@ -17,7 +17,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
             _printFormatRepository = new PrintFormatRepository();
             _orderRepository = new OrderRepository();
             _paymentMethodRepository = new PaymentMethodRepository();
-            _userDetailRepository= new UserDetailRepository();
+            _userDetailRepository = new UserDetailRepository();
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -25,7 +25,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
             if (Session["UserName"] == null) return;
             var userEmail = (string)Session["UserName"];
             var userDetail = _userDetailRepository.GetUserDetail(userEmail);
-            if(userEmail!=userDetail.UserName) return;
+            if (userEmail != userDetail.UserName) return;
 
             BindPrintFormats(userEmail);
             BindPaymentTypes(userDetail.StructureCode);
@@ -50,7 +50,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
         protected void btnCreateOrder_OnClick(object sender, EventArgs e)
         {
-            if  (Session["UserName"]== null) Response.Redirect("~/Account/Login.aspx");
+            if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
             var userEmail = Session["UserName"].ToString();
             var userDetail = _userDetailRepository.GetUserDetail(userEmail);
             var lastOrderNum = _orderRepository.GetLastOrder();
@@ -79,6 +79,8 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 ProductId = int.Parse(ddlPrintFormat.SelectedItem.Value)
             };
             _orderRepository.SaveOrderDetail(orderDetail);
+            Session["OrderNumber"] = orderNum.ToString();
+            Response.Redirect("OrderSuccess.aspx");
         }
     }
 }

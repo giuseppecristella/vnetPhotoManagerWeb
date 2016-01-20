@@ -25,7 +25,7 @@
     <div class="row">
         <div class="col-md-12">
             <asp:Button CssClass="btn btn-info" ID="btnCrop" runat="server" Text="Salva" OnClick="btnCrop_Click" />
-            <asp:Button CssClass="btn btn-info" ID="btnOrder" runat="server" Text="Crea Ordine" OnClick="btnOrder_OnClick" />
+            <asp:Button CssClass="btn btn-info" Visible="False" ID="btnOrder" runat="server" Text="Crea Ordine" OnClick="btnOrder_OnClick" />
         </div>
     </div>
     <br />

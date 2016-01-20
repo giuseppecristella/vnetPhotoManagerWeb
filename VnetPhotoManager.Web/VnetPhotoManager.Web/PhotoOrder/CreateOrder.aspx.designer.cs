@@ -40,6 +40,15 @@ namespace VnetPhotoManager.Web.PhotoOrder {
         protected global::System.Web.UI.WebControls.TextBox txtCopies;
         
         /// <summary>
+        /// rqCopies control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rqCopies;
+        
+        /// <summary>
         /// txtNotes control.
         /// </summary>
         /// <remarks>
@@ -47,6 +56,15 @@ namespace VnetPhotoManager.Web.PhotoOrder {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNotes;
+        
+        /// <summary>
+        /// rvNotes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rvNotes;
         
         /// <summary>
         /// ddlPayments control.

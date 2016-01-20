@@ -10,7 +10,7 @@
             <div class="col-md-10">
                 <asp:DropDownList CssClass="form-control" ID="ddlPrintFormat" ClientIDMode="Static" runat="server" />
                  <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlPrintFormat"
-                    CssClass="text-danger" ErrorMessage="Selezionare un formato di stampa." />
+                   ValidationGroup="vgOrder" CssClass="text-danger" ErrorMessage="Selezionare un formato di stampa." />
             </div>
         </div>
         <div class="form-group">
@@ -22,13 +22,17 @@
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="txtCopies" CssClass="col-md-2 control-label">Copie</asp:Label>
             <div class="col-md-10">
-                <asp:TextBox min="1" type="number" CssClass="form-control" runat="server" ID="txtCopies"></asp:TextBox>
+                <asp:TextBox min="1" type="number" Text="1" CssClass="form-control" runat="server" ID="txtCopies"></asp:TextBox>
+                 <asp:RequiredFieldValidator ID="rqCopies" runat="server" ControlToValidate="txtCopies" ValidationGroup="vgOrder"
+                    CssClass="text-danger" ErrorMessage="Campo obbligatorio." />
             </div>
         </div>
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="txtNotes" CssClass="col-md-2 control-label">Note</asp:Label>
             <div class="col-md-10">
                 <asp:TextBox CssClass="form-control" TextMode="MultiLine" Columns="5" runat="server" ID="txtNotes"></asp:TextBox>
+                 <asp:RequiredFieldValidator ID="rvNotes" runat="server" ControlToValidate="txtNotes" ValidationGroup="vgOrder"
+                    CssClass="text-danger" ErrorMessage="Campo obbligatorio." />
             </div>
         </div>
         <hr />
@@ -38,13 +42,13 @@
             <div class="col-md-10">
                 <asp:DropDownList CssClass="form-control" ID="ddlPayments" ClientIDMode="Static" runat="server" />
                 <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlPayments"
-                    CssClass="text-danger" ErrorMessage="Selezionare un metodo di pagamento." />
+                   ValidationGroup="vgOrder" CssClass="text-danger" ErrorMessage="Selezionare un metodo di pagamento." />
             </div>
         </div>
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="ddlPayments" CssClass="col-md-2 control-label"></asp:Label>
             <div class="col-md-10">
-                <asp:Button runat="server" ID="btnCreateOrder" Text="Ordina" OnClick="btnCreateOrder_OnClick" CssClass="btn btn-info" />
+                <asp:Button runat="server" ValidationGroup="vgOrder" ID="btnCreateOrder" Text="Ordina" OnClick="btnCreateOrder_OnClick" CssClass="btn btn-info" />
             </div>
         </div>
     </div>

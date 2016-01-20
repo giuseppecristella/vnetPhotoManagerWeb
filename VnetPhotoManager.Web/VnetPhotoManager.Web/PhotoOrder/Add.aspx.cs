@@ -37,10 +37,10 @@ namespace VnetPhotoManager.Web.PhotoOrder
         {
             if (Session["UploadedImage"] == null) return;
             var imageName = Session["UploadedImage"].ToString();
-            var w = Convert.ToInt32(W.Value);
-            var h = Convert.ToInt32(H.Value);
-            var x = Convert.ToInt32(X.Value);
-            var y = Convert.ToInt32(Y.Value);
+            var w = string.IsNullOrEmpty(W.Value) ? 1004 : Convert.ToInt32(W.Value);
+            var h = string.IsNullOrEmpty(H.Value) ? 768 : Convert.ToInt32(H.Value);
+            var x = string.IsNullOrEmpty(X.Value) ? 1 : Convert.ToInt32(X.Value);
+            var y = string.IsNullOrEmpty(Y.Value) ? 1 : Convert.ToInt32(Y.Value);
 
             var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
             var cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
@@ -48,6 +48,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
             SaveImage(cropImage, path, imageName);
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
             pnlCrop.Visible = true;
+            btnOrder.Visible = true;
         }
 
         private static void SaveImage(byte[] cropImage, string path, string imageName)
