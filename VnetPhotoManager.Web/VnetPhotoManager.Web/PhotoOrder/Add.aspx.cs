@@ -2,6 +2,7 @@
 using System.IO;
 using SD = System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Net;
 using System.Web;
 using VnetPhotoManager.Repository;
@@ -127,23 +128,35 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
         private bool CreateFtpFolder(string folderName)
         {
-            var ftp = WebRequest.Create(new Uri(string.Format(@"ftp://{0}/{1}", _ftpUrl, folderName))) as FtpWebRequest;
-            ftp.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
-            ftp.KeepAlive = true;
-            ftp.UseBinary = true;
-            ftp.Method = WebRequestMethods.Ftp.MakeDirectory;
-            try
+            var folders = folderName.Split('/');
+            var folderStructure = string.Empty;
+            foreach (var f in folders)
             {
-                using (var resp = (FtpWebResponse)ftp.GetResponse())
+                folderStructure += f + "/";
+                var ftp =
+                    WebRequest.Create(new Uri(string.Format(@"ftp://{0}/{1}", _ftpUrl, folderStructure))) as FtpWebRequest;
+                ftp.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
+                ftp.UsePassive = true;
+                ftp.UseBinary = true;
+                ftp.KeepAlive = false;
+
+                ftp.Method = WebRequestMethods.Ftp.MakeDirectory;
+                try
                 {
-                    return true;
+                    using (var resp = (FtpWebResponse)ftp.GetResponse())
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //return false;
                 }
             }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        } 
+            return true;
+        }
+
+
         #endregion
 
 
