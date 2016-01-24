@@ -175,6 +175,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Account\Web.config" />
     <Content Include="PhotoOrder\CreateOrder.aspx" />
+    <Content Include="PhotoOrder\DisplayImage.aspx" />
     <Content Include="PhotoOrder\Images\HtmlPage1.html" />
     <Content Include="PhotoOrder\Images\placeholder.png" />
     <Content Include="PhotoOrder\OrderSuccess.aspx" />
@@ -422,6 +423,13 @@
     </Compile>
     <Compile Include="PhotoOrder\CreateOrder.aspx.designer.cs">
       <DependentUpon>CreateOrder.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PhotoOrder\DisplayImage.aspx.cs">
+      <DependentUpon>DisplayImage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PhotoOrder\DisplayImage.aspx.designer.cs">
+      <DependentUpon>DisplayImage.aspx</DependentUpon>
     </Compile>
     <Compile Include="PhotoOrder\OrderSuccess.aspx.cs">
       <DependentUpon>OrderSuccess.aspx</DependentUpon>

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.EnterpriseServices;
+using System.Web.UI.WebControls;
 using VnetPhotoManager.Domain;
 using VnetPhotoManager.Repository;
 
@@ -22,12 +22,14 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Page.IsPostBack) return;
             if (Session["UserName"] == null) return;
             var userEmail = (string)Session["UserName"];
             var userDetail = _userDetailRepository.GetUserDetail(userEmail);
             if (userEmail != userDetail.UserName) return;
 
             BindPrintFormats(userEmail);
+            BindPrintFormatImageThumb(ddlPrintFormat.SelectedItem.Value);
             BindPaymentTypes(userDetail.StructureCode);
         }
 
@@ -66,6 +68,14 @@ namespace VnetPhotoManager.Web.PhotoOrder
             Response.Redirect("OrderSuccess.aspx");
         }
 
+        protected void ddlPrintFormat_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            var selected = sender as DropDownList;
+            if (selected == null) return;
+            var selectedItem = selected.SelectedItem.Value;
+            BindPrintFormatImageThumb(selectedItem);
+        }
+
         #region Private Methods
         private void BindPaymentTypes(string structureCode)
         {
@@ -82,7 +92,13 @@ namespace VnetPhotoManager.Web.PhotoOrder
             ddlPrintFormat.DataTextField = "Description";
             ddlPrintFormat.DataValueField = "ProductId";
             ddlPrintFormat.DataBind();
-        } 
+        }
+        private void BindPrintFormatImageThumb(string selectedItem)
+        {
+            imgPrintFormat.ImageUrl = string.Format("DisplayImage.aspx?ProductId={0}", selectedItem);
+        }
         #endregion
+
+
     }
 }

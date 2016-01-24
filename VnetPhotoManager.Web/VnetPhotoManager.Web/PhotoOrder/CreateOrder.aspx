@@ -8,7 +8,7 @@
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="ddlPrintFormat" CssClass="col-md-2 control-label">Formato</asp:Label>
             <div class="col-md-10">
-                <asp:DropDownList CssClass="form-control" ID="ddlPrintFormat" ClientIDMode="Static" runat="server" />
+                <asp:DropDownList CssClass="form-control" ID="ddlPrintFormat" ClientIDMode="Static" AutoPostBack="True" runat="server" OnSelectedIndexChanged="ddlPrintFormat_OnSelectedIndexChanged" />
                  <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlPrintFormat"
                    ValidationGroup="vgOrder" CssClass="text-danger" ErrorMessage="Selezionare un formato di stampa." />
             </div>
@@ -16,7 +16,7 @@
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="imgPrintFormat" CssClass="col-md-2 control-label">Anteprima Formato</asp:Label>
             <div class="col-md-10">
-                <asp:Image ID="imgPrintFormat" ImageUrl="Images/placeholder.png" runat="server" />
+                <asp:Image class="img-thumbnail" alt="Formato stampa" width="304" height="236" ID="imgPrintFormat" runat="server" />
             </div>
         </div>
         <div class="form-group">

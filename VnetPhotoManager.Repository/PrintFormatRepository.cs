@@ -38,18 +38,40 @@ namespace VnetPhotoManager.Repository
             }
         }
 
+        /// <summary>
+        /// Restituisce l'immagine del prodotto
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public byte[] GetProductImage(int productId)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+
+                SqlCommand command = new SqlCommand(@"SELECT * FROM CATALOGO WHERE ID_Catalogo=@productId", conn);
+                command.Parameters.Add("@productId", SqlDbType.Int).Value = productId;
+
+                using (SqlDataReader dr = command.ExecuteReader(CommandBehavior.SingleResult))
+                {
+                    dr.Read();
+                    return (byte[])dr["Immagine"];
+                }
+            }
+        }
+
         protected override PrintFormat BuildFromRecord(IDataRecord record)
         {
             return new PrintFormat
             {
-                // dr.Get<int>("dpkdit");
-                ProductId = Convert.ToString(record["ID_Catalogo"]),
+                ProductId = Convert.ToInt32(record["ID_Catalogo"]),
                 Code = Convert.ToString(record["CodiceStruttura"]),
                 Description = Convert.ToString(record["Descrizione"]),
                 Price = Convert.ToDouble(record["Prezzo"]),
-                ImgThumb = (Byte[])record["Immagine"] 
+                ImgThumb = (Byte[])record["Immagine"]
             };
         }
+
     }
 
 }
