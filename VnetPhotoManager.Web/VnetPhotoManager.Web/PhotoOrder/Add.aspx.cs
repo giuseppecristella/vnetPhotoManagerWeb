@@ -69,7 +69,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
             var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
             var cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
-            //UploadFileToFtp(cropImage, imageName, UserFolder);
+            UploadFileToFtp(cropImage, imageName, UserFolder);
             //if (File.Exists(string.Format("{0}{1}", path, imageName)))
             //{
             //    AppUtility.RegisterStartUpScript(Page, "ShowModal", "alert('Immagine già presente.')");
