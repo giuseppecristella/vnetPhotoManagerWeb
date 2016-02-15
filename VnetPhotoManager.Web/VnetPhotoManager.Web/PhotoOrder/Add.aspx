@@ -6,7 +6,7 @@
     <script src="../Scripts/dropzone/dropzone.js" type="text/javascript"></script>
     <link href="../Scripts/jcrop/jquery.Jcrop.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../Scripts/jcrop/jquery.Jcrop.js"></script>
-
+    <script src="../Scripts/bootstrap.js"></script>
     <script src="Scripts/PhotoOrder.js"></script>
 
     <h2>Upload Foto</h2>
@@ -24,19 +24,107 @@
     <br />
     <div class="row">
         <div class="col-md-12">
-            <asp:Button CssClass="btn btn-info" ID="btnCrop" runat="server" Text="Salva" OnClick="btnCrop_Click" />
-            <asp:Button CssClass="btn btn-info" Visible="False" ID="btnOrder" runat="server" Text="Crea Ordine" OnClick="btnOrder_OnClick" />
+            <div id="target">
+                <input type="button" value="Aggiungi" class="btn btn-info" id="btnAddandCrop" />
+            </div>
         </div>
     </div>
     <br />
     <div class="row">
-        <asp:Panel runat="server" ClientIDMode="Static" id="pnlCrop" class="col-md-12" style="overflow: scroll;">
-            <asp:Image ClientIDMode="Static" ID="imgCropped" runat="server" />
-            <br />
-            <asp:HiddenField ClientIDMode="Static" ID="X" runat="server" />
-            <asp:HiddenField ClientIDMode="Static" ID="Y" runat="server" />
-            <asp:HiddenField ClientIDMode="Static" ID="W" runat="server" />
-            <asp:HiddenField ClientIDMode="Static" ID="H" runat="server" />
-        </asp:Panel>
+        <h2>Foto caricate</h2>
+        <p>per procedere con l'ordine delle foto aggiunte, cliccare il pulsante Crea Ordine</p>
+        <asp:ListView runat="server" ID="lvPhotos" OnItemCommand="lvPhotos_OnItemCommand" OnItemDataBound="lvPhotos_OnItemDataBound">
+            <LayoutTemplate>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nome</th>
+                            <th>Formato</th>
+                            <th></th>
+                            <th>Prezzo Unit.</th>
+                            <th>Num. Copie</th>
+                         <%--   <th>Prezzo Tot.</th>--%>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr runat="server" id="itemPlaceholder"></tr>
+                    </tbody>
+                </table>
+            </LayoutTemplate>
+
+            <ItemTemplate>
+                <tr>
+                    <td>
+                        <asp:HiddenField runat="server" ID="hfFtpPath" Value='<%# Eval("FtpPath") %>' />
+                        <asp:Image Width="50" ID="imgPhoto" runat="server" ImageUrl='<%#Eval("Path") %>' />
+                    </td>
+                    <td>
+                        <asp:Label ID="lblName" runat="server" Text='<%#Eval("Name") %>' /></td>
+                    <td>
+                        <asp:DropDownList runat="server" ID="ddlPrintFormats" AutoPostBack="True" OnSelectedIndexChanged="ddlPrintFormat_OnSelectedIndexChanged" />
+                    </td>
+                    <td>
+                        <asp:LinkButton runat="server" ID="lbFormatPreview" Text="Anteprima Formato" CommandName="FormatPrieview"></asp:LinkButton>
+                    </td>
+                    <td>
+                         <asp:Label ID="lblPrice" runat="server" Text="" />
+                    </td>
+                    <td>
+                        <asp:TextBox min="1" type="number" Text="1" CssClass="form-control" runat="server" ID="txtCopies"></asp:TextBox>
+                        <%-- <asp:RequiredFieldValidator ID="rqCopies" runat="server" ControlToValidate="txtCopies" ValidationGroup="vgOrder"
+                            CssClass="text-danger" ErrorMessage="Campo obbligatorio." />--%>
+                    </td>
+                   <%--  <td>
+                         <asp:Label ID="lblTotPrice" runat="server" Text="" />
+                    </td>--%>
+                </tr>
+            </ItemTemplate>
+        </asp:ListView>
+        <asp:Button CssClass="btn btn-info" Visible="False" ID="btnOrder" runat="server" Text="Crea Ordine" OnClick="btnOrder_OnClick" />
+
     </div>
+
+    <!-- Modal HTML -->
+    <div id="addPhotoModal" class="modal fade" role="dialog">
+        <div style="width: 1280px;" class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="row">
+                    <asp:Panel runat="server" ClientIDMode="Static" ID="pnlCrop" class="col-md-12">
+                        <asp:Image ClientIDMode="Static" ID="imgCropped" runat="server" />
+                        <br />
+                        <asp:HiddenField ClientIDMode="Static" ID="X" runat="server" />
+                        <asp:HiddenField ClientIDMode="Static" ID="Y" runat="server" />
+                        <asp:HiddenField ClientIDMode="Static" ID="W" runat="server" />
+                        <asp:HiddenField ClientIDMode="Static" ID="H" runat="server" />
+                        <br />
+                        <asp:Button CssClass="btn btn-info" ID="btnAddToGrid" runat="server" Text="Salva" OnClick="btnCrop_Click" />
+                    </asp:Panel>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="formatPrieviewModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <asp:Image class="img-thumbnail" alt="Formato stampa" ID="imgPrintFormat" runat="server" />
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        function openFormatPrieviewModal() {
+            $("#formatPrieviewModal").modal('show');
+        };
+
+        //$("#target").click(function () {
+        //    var a = dropZone.getUploadingFiles();
+
+        //    $("#addPhotoModal").modal('show');
+
+        //});
+    </script>
+
 </asp:Content>

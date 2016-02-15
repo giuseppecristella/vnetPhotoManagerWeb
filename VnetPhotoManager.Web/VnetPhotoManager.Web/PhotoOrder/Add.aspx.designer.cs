@@ -13,13 +13,13 @@ namespace VnetPhotoManager.Web.PhotoOrder {
     public partial class Add {
         
         /// <summary>
-        /// btnCrop control.
+        /// lvPhotos control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCrop;
+        protected global::System.Web.UI.WebControls.ListView lvPhotos;
         
         /// <summary>
         /// btnOrder control.
@@ -83,5 +83,23 @@ namespace VnetPhotoManager.Web.PhotoOrder {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField H;
+        
+        /// <summary>
+        /// btnAddToGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAddToGrid;
+        
+        /// <summary>
+        /// imgPrintFormat control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image imgPrintFormat;
     }
 }

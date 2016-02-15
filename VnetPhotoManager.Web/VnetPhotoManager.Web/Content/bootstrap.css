@@ -5622,6 +5622,10 @@ body.modal-open,
   overflow-y: scroll;
 }
 
+.modal-lg {
+    width: 900px;
+  }
+
 .modal.fade .modal-dialog {
   -webkit-transform: translate(0, -25%);
       -ms-transform: translate(0, -25%);

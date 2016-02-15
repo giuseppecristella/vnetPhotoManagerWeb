@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using SD = System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.UI.WebControls;
+using VnetPhotoManager.Domain;
 using VnetPhotoManager.Repository;
+using VnetPhotoManager.Web.Helpers;
 
 namespace VnetPhotoManager.Web.PhotoOrder
 {
@@ -14,13 +18,33 @@ namespace VnetPhotoManager.Web.PhotoOrder
         private static string _ftpUrl = "46.228.255.118";
         private static string _ftpUser = "user1";
         private static string _ftpPassword = "utente12345";
+        //private static 
         private readonly UserDetailRepository _userDetailRepository;
-        private static string _userFolder;
+        private readonly PrintFormatRepository _printFormatRepository;
+        public static string UserFolder { get; private set; }
+        public static List<PrintFormat> _printFormatsLookup { get; set; }
+        // public List<PhotoViewModel> Photos { get; set; }
 
+        public List<PhotoViewModel> Photos
+        {
+            get
+            {
+                if (Session["Photos"] == null)
+                {
+                    Session["Photos"] = new List<PhotoViewModel>();
+                }
+                return Session["Photos"] as List<PhotoViewModel>;
+            }
+            set
+            {
+                Session["Photos"] = value;
+            }
+        }
 
         public Add()
         {
             _userDetailRepository = new UserDetailRepository();
+            _printFormatRepository = new PrintFormatRepository();
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -30,10 +54,10 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
                 var userEmail = (string)Session["UserName"];
                 var userDetail = _userDetailRepository.GetUserDetail(userEmail);
-                _userFolder = userDetail.StructureCode + "/" + userDetail.StructureCode + "/" + userDetail.UserName.Replace("@", "_");
+                UserFolder = string.Format("{0}/{0}/{1}", userDetail.StructureCode, userDetail.UserName.Replace("@", "_"));
+                _printFormatsLookup = _printFormatRepository.GetPhotoPrintFormats(userEmail);
             }
         }
-
         protected void btnCrop_Click(object sender, EventArgs e)
         {
             if (Session["UploadedImage"] == null) return;
@@ -45,21 +69,123 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
             var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
             var cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
-            UploadFileToFtp(cropImage, imageName, _userFolder);
+            //UploadFileToFtp(cropImage, imageName, UserFolder);
+            //if (File.Exists(string.Format("{0}{1}", path, imageName)))
+            //{
+            //    AppUtility.RegisterStartUpScript(Page, "ShowModal", "alert('Immagine già presente.')");
+            //    return;
+            //    //AppUtility.RegisterStartUpScript(Page, "ShowModal", "openAlreadyExistModal()");
+            //}
             SaveImage(cropImage, path, imageName);
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
             pnlCrop.Visible = true;
             btnOrder.Visible = true;
+            Photos.Add(new PhotoViewModel { Name = imageName, Path = string.Format("images/{0}", imageName), FtpPath = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, UserFolder, imageName) });
+            lvPhotos.DataSource = Photos;
+            lvPhotos.DataBind();
+            imgCropped.ImageUrl = string.Empty;
+
         }
         protected void btnOrder_OnClick(object sender, EventArgs e)
         {
-            // Salvo in sessione la cartella ftp dove ho salvato il file
+            Photos.Clear();
+            foreach (var item in lvPhotos.Items)
+            {
+                BindItemToPhotoVM(item);
+            }
             Response.Redirect("CreateOrder.aspx");
         }
 
+        private void BindItemToPhotoVM(ListViewDataItem item)
+        {
+            var imgPhoto = item.FindControl("imgPhoto") as Image;
+            if (imgPhoto == null) return;
+            var lblName = item.FindControl("lblName") as Label;
+            if (lblName == null) return;
+            var ddlPrintFormats = item.FindControl("ddlPrintFormats") as DropDownList;
+            if (ddlPrintFormats == null) return;
+            var txtCopies = item.FindControl("txtCopies") as TextBox;
+            if (txtCopies == null) return;
+            var lblPrice = item.FindControl("lblPrice") as Label;
+            if (lblPrice == null) return;
+            var hfFtpPath = item.FindControl("hfFtpPath") as HiddenField;
+            if (hfFtpPath == null) return;
+
+            Photos.Add(new PhotoViewModel
+            {
+                Name = lblName.Text,
+                Path = string.Format("images/{0}", lblName.Text),
+                Format = int.Parse(ddlPrintFormats.SelectedItem.Value),
+                Copies = int.Parse(txtCopies.Text),
+                UnitPrice = decimal.Parse(lblPrice.Text),
+                TotalPrice = decimal.Parse(lblPrice.Text) * int.Parse(txtCopies.Text),
+                FtpPath = hfFtpPath.Value
+            });
+        }
+
+        protected void ddlPrintFormat_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            DropDownList ddl = (DropDownList)sender;
+            var item = (ListViewDataItem)ddl.NamingContainer;
+            string selectedValue = ((DropDownList)(item.FindControl("ddlPrintFormats"))).SelectedValue;
+
+            var lblPrice = item.FindControl("lblPrice") as Label;
+            if (lblPrice == null) return;
+            lblPrice.Text = SetItemPrice(int.Parse(ddl.SelectedItem.Value)).ToString();
+
+            var txtCopies = item.FindControl("txtCopies") as TextBox;
+            if (txtCopies == null) return;
+
+            //var lblTotPrice = item.FindControl("lblTotPrice") as Label;
+            //if (lblTotPrice == null) return;
+            //var total = SetItemPrice(int.Parse(ddl.SelectedItem.Value)) * int.Parse(txtCopies.Text);
+            //lblTotPrice.Text = total.ToString();
+        }
+        protected void lvPhotos_OnItemDataBound(object sender, ListViewItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListViewItemType.DataItem)
+            {
+                var ddlPrintFormats = e.Item.FindControl("ddlPrintFormats") as DropDownList;
+                if (ddlPrintFormats == null) return;
+                ddlPrintFormats.DataSource = _printFormatsLookup;
+                ddlPrintFormats.DataTextField = "Description";
+                ddlPrintFormats.DataValueField = "ProductId";
+                ddlPrintFormats.DataBind();
+
+                var lblPrice = e.Item.FindControl("lblPrice") as Label;
+                if (lblPrice == null) return;
+                lblPrice.Text = SetItemPrice(int.Parse(ddlPrintFormats.SelectedItem.Value)).ToString();
+
+                var txtCopies = e.Item.FindControl("txtCopies") as TextBox;
+                if (txtCopies == null) return;
+
+                //var lblTotPrice = e.Item.FindControl("lblTotPrice") as Label;
+                //if (lblTotPrice == null) return;
+                //var total = SetItemPrice(int.Parse(ddlPrintFormats.SelectedItem.Value)) * int.Parse(txtCopies.Text);
+                //lblTotPrice.Text = total.ToString();
+            }
+        }
+        protected void lvPhotos_OnItemCommand(object sender, ListViewCommandEventArgs e)
+        {
+            if (!String.Equals(e.CommandName, "FormatPrieview")) return;
+            // var dataItem = (ListViewDataItem) e.Item;
+            var ddlPrintFormats = e.Item.FindControl("ddlPrintFormats") as DropDownList;
+            if (ddlPrintFormats == null) return;
+            var selectedItem = ddlPrintFormats.SelectedItem.Value;
+            imgPrintFormat.ImageUrl = string.Format("DisplayImage.aspx?ProductId={0}", selectedItem);
+            AppUtility.RegisterStartUpScript(Page, "ShowModal", "openFormatPrieviewModal()");
+        }
+
         #region Private Methods
+        private double SetItemPrice(int printFormatId)
+        {
+            return _printFormatsLookup.First(pf => pf.ProductId.Equals(printFormatId)).Price;
+        }
+
+
         private static void SaveImage(byte[] cropImage, string path, string imageName)
         {
+            // Check se esiste già un file con lo stesso nome
             using (var ms = new MemoryStream(cropImage, 0, cropImage.Length))
             {
                 ms.Write(cropImage, 0, cropImage.Length);
@@ -155,12 +281,17 @@ namespace VnetPhotoManager.Web.PhotoOrder
             }
             return true;
         }
-
-
         #endregion
-
-
     }
 
-
+    public class PhotoViewModel
+    {
+        public string Name { get; set; }
+        public string Path { get; set; }
+        public int Format { get; set; }
+        public int Copies { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string FtpPath { get; set; }
+    }
 }

@@ -13,40 +13,13 @@ namespace VnetPhotoManager.Web.PhotoOrder {
     public partial class CreateOrder {
         
         /// <summary>
-        /// ddlPrintFormat control.
+        /// lvPhotos control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlPrintFormat;
-        
-        /// <summary>
-        /// imgPrintFormat control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image imgPrintFormat;
-        
-        /// <summary>
-        /// txtCopies control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCopies;
-        
-        /// <summary>
-        /// rqCopies control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rqCopies;
+        protected global::System.Web.UI.WebControls.ListView lvPhotos;
         
         /// <summary>
         /// txtNotes control.

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Web.UI.WebControls;
 using VnetPhotoManager.Domain;
 using VnetPhotoManager.Repository;
@@ -11,6 +14,26 @@ namespace VnetPhotoManager.Web.PhotoOrder
         private readonly OrderRepository _orderRepository;
         private readonly PaymentMethodRepository _paymentMethodRepository;
         private readonly UserDetailRepository _userDetailRepository;
+
+        private static string _ftpUrl = "46.228.255.118";
+        private static string _ftpUser = "user1";
+        private static string _ftpPassword = "utente12345";
+
+        public List<PhotoViewModel> Photos
+        {
+            get
+            {
+                if (Session["Photos"] == null)
+                {
+                    Session["Photos"] = new List<PhotoViewModel>();
+                }
+                return Session["Photos"] as List<PhotoViewModel>;
+            }
+            set
+            {
+                Session["Photos"] = value;
+            }
+        }
 
         public CreateOrder()
         {
@@ -28,8 +51,8 @@ namespace VnetPhotoManager.Web.PhotoOrder
             var userDetail = _userDetailRepository.GetUserDetail(userEmail);
             if (userEmail != userDetail.UserName) return;
 
-            BindPrintFormats(userEmail);
-            BindPrintFormatImageThumb(ddlPrintFormat.SelectedItem.Value);
+            //BindPrintFormats(userEmail);
+            BindPhotosList();
             BindPaymentTypes(userDetail.StructureCode);
         }
 
@@ -56,24 +79,21 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
             var orderId = _orderRepository.SaveOrder(order);
 
-            var orderDetail = new OrderDetail
+
+            foreach (var photo in Photos)
             {
-                OrderId = orderId,
-                CopyNumber = int.Parse(txtCopies.Text),
-                FtpPhotoPath = Session["FtpPhotoPath"].ToString(),
-                ProductId = int.Parse(ddlPrintFormat.SelectedItem.Value)
-            };
-            _orderRepository.SaveOrderDetail(orderDetail);
+                // TODO: Update To FTP
+                var orderDetail = new OrderDetail
+                {
+                    OrderId = orderId,
+                    CopyNumber = photo.Copies,
+                    FtpPhotoPath = photo.FtpPath,
+                    ProductId = photo.Format
+                };
+                _orderRepository.SaveOrderDetail(orderDetail);
+            }
             Session["OrderNumber"] = orderNum.ToString();
             Response.Redirect("OrderSuccess.aspx");
-        }
-
-        protected void ddlPrintFormat_OnSelectedIndexChanged(object sender, EventArgs e)
-        {
-            var selected = sender as DropDownList;
-            if (selected == null) return;
-            var selectedItem = selected.SelectedItem.Value;
-            BindPrintFormatImageThumb(selectedItem);
         }
 
         #region Private Methods
@@ -84,18 +104,69 @@ namespace VnetPhotoManager.Web.PhotoOrder
             ddlPayments.DataValueField = "PaymentId";
             ddlPayments.DataBind();
         }
-
-        private void BindPrintFormats(string userEmail)
+        
+        private void BindPhotosList()
         {
-            var printFormats = _printFormatRepository.GetPhotoPrintFormats(userEmail);
-            ddlPrintFormat.DataSource = printFormats;
-            ddlPrintFormat.DataTextField = "Description";
-            ddlPrintFormat.DataValueField = "ProductId";
-            ddlPrintFormat.DataBind();
+            lvPhotos.DataSource = Photos;
+            lvPhotos.DataBind();
+            var lblTotal = lvPhotos.FindControl("lblTotal") as Label;
+            if (lblTotal== null) return;
+            lblTotal.Text = Photos.Sum(p => p.TotalPrice).ToString();
         }
-        private void BindPrintFormatImageThumb(string selectedItem)
+
+        private void UploadFileToFtp(byte[] file, string filename, string userFolder)
         {
-            imgPrintFormat.ImageUrl = string.Format("DisplayImage.aspx?ProductId={0}", selectedItem);
+            try
+            {
+                var areCreatedNewFolder = CreateFtpFolder(userFolder);
+
+                var ftp = WebRequest.Create(new Uri(string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, userFolder, filename))) as FtpWebRequest;
+                if (ftp == null) return;
+                Session["FtpPhotoPath"] = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, userFolder, filename);
+                ftp.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
+                ftp.KeepAlive = true;
+                ftp.UseBinary = true;
+                ftp.Method = WebRequestMethods.Ftp.UploadFile;
+
+                var ftpstream = ftp.GetRequestStream();
+                ftpstream.Write(file, 0, file.Length);
+                ftpstream.Close();
+            }
+            catch (Exception ex)
+            {
+                // Log Exception
+                throw ex;
+            }
+        }
+
+        private bool CreateFtpFolder(string folderName)
+        {
+            var folders = folderName.Split('/');
+            var folderStructure = string.Empty;
+            foreach (var f in folders)
+            {
+                folderStructure += f + "/";
+                var ftp =
+                    WebRequest.Create(new Uri(string.Format(@"ftp://{0}/{1}", _ftpUrl, folderStructure))) as FtpWebRequest;
+                ftp.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
+                ftp.UsePassive = true;
+                ftp.UseBinary = true;
+                ftp.KeepAlive = false;
+
+                ftp.Method = WebRequestMethods.Ftp.MakeDirectory;
+                try
+                {
+                    using (var resp = (FtpWebResponse)ftp.GetResponse())
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //return false;
+                }
+            }
+            return true;
         }
         #endregion
 
