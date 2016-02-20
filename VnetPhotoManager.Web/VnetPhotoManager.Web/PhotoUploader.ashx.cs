@@ -34,6 +34,12 @@ namespace VnetPhotoManager.Web
 
                 if (string.IsNullOrEmpty(file.FileName)) continue;
                 HttpContext.Current.Session["UploadedImage"] = SaveToFolder(file, strImage, numFiles, dirFullPath);
+
+                var name = (string) HttpContext.Current.Session["UploadedImage"];
+                var i = new ImageResizer.ImageJob(file, "~/PhotoOrder/Images/" + Path.GetFileNameWithoutExtension(name) + "_resize.<ext>", new ImageResizer.ResizeSettings(
+                    "width=500;format=jpg;mode=max")) {CreateParentDirectory = true};
+                //Auto-create the uploads directory.
+                i.Build();
                 //UploadFileToFtp(file);
             }
             strImage = HttpContext.Current.Session["UploadedImage"] as string;

@@ -14,7 +14,7 @@ $(document).ready(function () {
             var imgName = response;
             file.previewElement.classList.add("dz-success");
             console.log("Successfully uploaded :" + imgName);
-            jcrop_api.setImage("../PhotoOrder/Images/" + imgName);
+            jcrop_api.setImage("../PhotoOrder/Images/" + imgName.replace(".jpg", "_resize.jpg"));
             $("#pnlCrop").css("display", "block");
         },
         error: function (file, response) {
@@ -63,7 +63,7 @@ $(document).ready(function () {
         }
     });
 
-    var openAlreadyExistModal = function() {
+    var openAlreadyExistModal = function () {
         $("#addPhotoModal").modal('show');
     }
 

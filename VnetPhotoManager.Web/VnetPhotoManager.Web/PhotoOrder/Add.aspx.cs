@@ -62,10 +62,12 @@ namespace VnetPhotoManager.Web.PhotoOrder
         {
             if (Session["UploadedImage"] == null) return;
             var imageName = Session["UploadedImage"].ToString();
+            // Resize, e preview nella finestra modale
+
             var w = string.IsNullOrEmpty(W.Value) ? 1004 : Convert.ToInt32(W.Value);
             var h = string.IsNullOrEmpty(H.Value) ? 768 : Convert.ToInt32(H.Value);
-            var x = string.IsNullOrEmpty(X.Value) ? 1 : Convert.ToInt32(X.Value);
-            var y = string.IsNullOrEmpty(Y.Value) ? 1 : Convert.ToInt32(Y.Value);
+            var x = string.IsNullOrEmpty(X.Value) ? 100 : Convert.ToInt32(X.Value);
+            var y = string.IsNullOrEmpty(Y.Value) ? 100 : Convert.ToInt32(Y.Value);
 
             var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
             var cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
