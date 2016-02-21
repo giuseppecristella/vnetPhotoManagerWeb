@@ -62,23 +62,38 @@ namespace VnetPhotoManager.Web.PhotoOrder
         {
             if (Session["UploadedImage"] == null) return;
             var imageName = Session["UploadedImage"].ToString();
-            // Resize, e preview nella finestra modale
 
+            // Resize, e preview nella finestra modale
             var w = string.IsNullOrEmpty(W.Value) ? 1004 : Convert.ToInt32(W.Value);
             var h = string.IsNullOrEmpty(H.Value) ? 768 : Convert.ToInt32(H.Value);
             var x = string.IsNullOrEmpty(X.Value) ? 100 : Convert.ToInt32(X.Value);
             var y = string.IsNullOrEmpty(Y.Value) ? 100 : Convert.ToInt32(Y.Value);
 
             var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
+            // Calcolo larghezza immagine originale = 2048
+
+            using (var img = System.Drawing.Image.FromFile(string.Format("{0}{1}", path, imageName)))
+            {
+                x = (int)Math.Floor((decimal)(x * ((float)img.Width / 500)));
+                y = (int)Math.Floor((decimal)(y * ((float)img.Width / 500)));
+                w = (int)Math.Floor((decimal)(w * ((float)img.Width / 500)));
+                h = (int)Math.Floor((decimal)(h * ((float)img.Width / 500)));
+
+                if (x > img.Width) x = img.Width;
+                if (w > img.Width) x = img.Width;
+                if (y > img.Height) y = img.Height;
+                if (h > img.Height) y = img.Height;
+            }
+
+            // Calcolo percentuale di ridimensionamento e adeguo le coordinate di ritaglio
             var cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
-            UploadFileToFtp(cropImage, imageName, UserFolder);
-            //if (File.Exists(string.Format("{0}{1}", path, imageName)))
-            //{
-            //    AppUtility.RegisterStartUpScript(Page, "ShowModal", "alert('Immagine già presente.')");
-            //    return;
-            //    //AppUtility.RegisterStartUpScript(Page, "ShowModal", "openAlreadyExistModal()");
-            //}
+            //Path.GetFileNameWithoutExtension(imageName)
+
+            // Cancello la foto resized perchè mi serve solo per l'anteprima
+            File.Delete(string.Format("{0}{1}", path, string.Format("{0}_resized.jpg", Path.GetFileNameWithoutExtension(imageName))));
+
             SaveImage(cropImage, path, imageName);
+            //UploadFileToFtp(cropImage, imageName, UserFolder);
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
             pnlCrop.Visible = true;
             btnOrder.Visible = true;

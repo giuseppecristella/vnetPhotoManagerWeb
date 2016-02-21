@@ -14,7 +14,7 @@ $(document).ready(function () {
             var imgName = response;
             file.previewElement.classList.add("dz-success");
             console.log("Successfully uploaded :" + imgName);
-            jcrop_api.setImage("../PhotoOrder/Images/" + imgName.replace(".jpg", "_resize.jpg"));
+            jcrop_api.setImage("../PhotoOrder/Images/" + imgName.replace(".jpg", "_resized.jpg"));
             $("#pnlCrop").css("display", "block");
         },
         error: function (file, response) {
@@ -45,7 +45,9 @@ $(document).ready(function () {
     //});
 
     $("#imgCropped").Jcrop({
-        onSelect: storeCoords
+        onSelect: storeCoords,
+        setSelect: [ 60, 70, 440, 330 ],
+        allowResize: false
     }, function () {
         jcrop_api = this;
     });

@@ -84,7 +84,7 @@
         <asp:Button CssClass="btn btn-info" Visible="False" ID="btnOrder" runat="server" Text="Crea Ordine" OnClick="btnOrder_OnClick" />
 
     </div>
-
+      <img src="Images/disagio.jpg" id="target1" alt="Jcrop Image" />
     <!-- Modal HTML -->
     <div id="addPhotoModal" class="modal fade" role="dialog">
         <div style="width: 1280px;" class="modal-dialog modal-lg" role="document">

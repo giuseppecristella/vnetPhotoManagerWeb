@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.SessionState;
+using System.Web.UI;
+using VnetPhotoManager.Web.Helpers;
 
 namespace VnetPhotoManager.Web
 {
@@ -25,7 +29,7 @@ namespace VnetPhotoManager.Web
             var numFiles = files.Length;
             numFiles = numFiles + 1;
 
-            var strImage = "";
+            string strImage;
 
             foreach (string s in context.Request.Files)
             {
@@ -33,17 +37,29 @@ namespace VnetPhotoManager.Web
                 if (file == null) continue;
 
                 if (string.IsNullOrEmpty(file.FileName)) continue;
+
+                strImage = File.Exists(string.Format("{0}{1}", dirFullPath, file.FileName)) ? RenameUploadingImage(dirFullPath, file.FileName) : file.FileName;
+
                 HttpContext.Current.Session["UploadedImage"] = SaveToFolder(file, strImage, numFiles, dirFullPath);
 
-                var name = (string) HttpContext.Current.Session["UploadedImage"];
-                var i = new ImageResizer.ImageJob(file, "~/PhotoOrder/Images/" + Path.GetFileNameWithoutExtension(name) + "_resize.<ext>", new ImageResizer.ResizeSettings(
-                    "width=500;format=jpg;mode=max")) {CreateParentDirectory = true};
+                var name = (string)HttpContext.Current.Session["UploadedImage"];
+                var i = new ImageResizer.ImageJob(file, string.Format("~/PhotoOrder/Images/{0}_resized.<ext>", Path.GetFileNameWithoutExtension(name)), new ImageResizer.ResizeSettings(
+                    "width=500;format=jpg;mode=max")) { CreateParentDirectory = true };
                 //Auto-create the uploads directory.
                 i.Build();
-                //UploadFileToFtp(file);
             }
             strImage = HttpContext.Current.Session["UploadedImage"] as string;
             context.Response.Write(strImage);
+        }
+
+        private string RenameUploadingImage(string path, string imageName)
+        {
+            var imageNameWithoutExt = Path.GetFileNameWithoutExtension(imageName);
+            string[] alreadyRenamedFiles = Directory.GetFiles(path, string.Format("{0}(*", imageNameWithoutExt));
+            if (!alreadyRenamedFiles.Any()) return string.Format("{0}({1}).jpg", imageNameWithoutExt, 1);
+            var imageSavedIdx = alreadyRenamedFiles.Select(rf => Regex.Match(rf, @"\(([^)]*)\)").Groups[1].Value);
+            var lastIdx = imageSavedIdx.Max(idx => int.Parse(idx));
+            return string.Format("{0}({1}).jpg", imageNameWithoutExt, lastIdx + 1);
         }
 
 
@@ -75,7 +91,6 @@ namespace VnetPhotoManager.Web
 
         private static string SaveToFolder(HttpPostedFile file, string strImage, int numFiles, string dirFullPath)
         {
-            strImage = file.FileName;
             var imagesFolder = string.Format("{0}{1}", dirFullPath, strImage);
             file.SaveAs(imagesFolder);
             return strImage;
