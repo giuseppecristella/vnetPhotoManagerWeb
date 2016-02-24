@@ -93,7 +93,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
             File.Delete(string.Format("{0}{1}", path, string.Format("{0}_resized.jpg", Path.GetFileNameWithoutExtension(imageName))));
 
             SaveImage(cropImage, path, imageName);
-            //UploadFileToFtp(cropImage, imageName, UserFolder);
+            UploadFileToFtp(cropImage, imageName, UserFolder);
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
             pnlCrop.Visible = true;
             btnOrder.Visible = true;

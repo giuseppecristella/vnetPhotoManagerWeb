@@ -14,7 +14,12 @@ $(document).ready(function () {
             var imgName = response;
             file.previewElement.classList.add("dz-success");
             console.log("Successfully uploaded :" + imgName);
-            jcrop_api.setImage("../PhotoOrder/Images/" + imgName.replace(".jpg", "_resized.jpg"));
+            //jcrop_api.destroy();
+            $("#imgCropped").attr("src", "../PhotoOrder/Images/" + imgName.replace(".jpg", "_resize.jpg"));
+            jcrop_api = $.Jcrop('#imgCropped', { aspectRatio: 1, setSelect : [60, 70, 540, 330] });
+           // jcrop_api.setImage("../PhotoOrder/Images/" + imgName.replace(".jpg", "_resize.jpg"));
+            
+            jcrop_api.bgOpacity=  .2,
             $("#pnlCrop").css("display", "block");
         },
         error: function (file, response) {
@@ -44,13 +49,17 @@ $(document).ready(function () {
     //    }
     //});
 
-    $("#imgCropped").Jcrop({
-        onSelect: storeCoords,
-        setSelect: [ 60, 70, 440, 330 ],
-        allowResize: false
-    }, function () {
-        jcrop_api = this;
-    });
+    //$("#imgCropped").Jcrop({
+    //    onSelect: storeCoords
+    //}, function () {
+    //    jcrop_api = this;
+    //});
+
+    //$('#target1').Jcrop({
+    //    setSelect: [60, 70, 540, 330]
+    //}, function () {
+    //    jcrop_api = this;
+    //});
 
     function storeCoords(c) {
         $("#X").val(c.x);
