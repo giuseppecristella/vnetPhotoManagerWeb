@@ -44,7 +44,7 @@
                             <th></th>
                             <th>Prezzo Unit.</th>
                             <th>Num. Copie</th>
-                         <%--   <th>Prezzo Tot.</th>--%>
+                            <%--   <th>Prezzo Tot.</th>--%>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,14 +68,14 @@
                         <asp:LinkButton runat="server" ID="lbFormatPreview" Text="Anteprima Formato" CommandName="FormatPrieview"></asp:LinkButton>
                     </td>
                     <td>
-                         <asp:Label ID="lblPrice" runat="server" Text="" />
+                        <asp:Label ID="lblPrice" runat="server" Text="" />
                     </td>
                     <td>
                         <asp:TextBox min="1" type="number" Text="1" CssClass="form-control" runat="server" ID="txtCopies"></asp:TextBox>
                         <%-- <asp:RequiredFieldValidator ID="rqCopies" runat="server" ControlToValidate="txtCopies" ValidationGroup="vgOrder"
                             CssClass="text-danger" ErrorMessage="Campo obbligatorio." />--%>
                     </td>
-                   <%--  <td>
+                    <%--  <td>
                          <asp:Label ID="lblTotPrice" runat="server" Text="" />
                     </td>--%>
                 </tr>
@@ -84,37 +84,37 @@
         <asp:Button CssClass="btn btn-info" Visible="False" ID="btnOrder" runat="server" Text="Crea Ordine" OnClick="btnOrder_OnClick" />
 
     </div>
-      <img src="Images/disagio.jpg" id="target1" alt="Jcrop Image" />
     <!-- Modal HTML -->
     <div id="addPhotoModal" class="modal fade" role="dialog">
-        <div style="width: 1280px;" class="modal-dialog modal-lg" role="document">
+        <div id="previewPhotoDialog" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <div class="row">
-                    <asp:Panel runat="server" ClientIDMode="Static" ID="pnlCrop" class="col-md-12">
-                        <asp:Image ClientIDMode="Static" ID="imgCropped" runat="server" />
-                        <br />
-                        <asp:HiddenField ClientIDMode="Static" ID="X" runat="server" />
-                        <asp:HiddenField ClientIDMode="Static" ID="Y" runat="server" />
-                        <asp:HiddenField ClientIDMode="Static" ID="W" runat="server" />
-                        <asp:HiddenField ClientIDMode="Static" ID="H" runat="server" />
-                        <br />
-                        <asp:Button CssClass="btn btn-info" ID="btnAddToGrid" runat="server" Text="Salva" OnClick="btnCrop_Click" />
-                    </asp:Panel>
+                <%--   <asp:Panel runat="server" ClientIDMode="Static" ID="pnlCrop">  </asp:Panel>--%>
+                <asp:Image ClientIDMode="Static" ImageUrl="Images/placeholder.png" ID="imgCropped" runat="server" />
+
+                <div class="modal-footer">
+                    <asp:Button CssClass="btn btn-info pull-right" ID="btnAddToGrid" runat="server" Text="Salva" OnClick="btnCrop_Click" />
                 </div>
             </div>
         </div>
     </div>
 
+
+    <asp:HiddenField ClientIDMode="Static" ID="X" runat="server" />
+    <asp:HiddenField ClientIDMode="Static" ID="Y" runat="server" />
+    <asp:HiddenField ClientIDMode="Static" ID="W" runat="server" />
+    <asp:HiddenField ClientIDMode="Static" ID="H" runat="server" />
+
+
     <div id="formatPrieviewModal" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-              <asp:Image class="img-thumbnail" alt="Formato stampa" ID="imgPrintFormat" runat="server" />
+                <asp:Image class="img-thumbnail" alt="Formato stampa" ID="imgPrintFormat" runat="server" />
             </div>
         </div>
     </div>
 
     <script>
-        
+
         function openFormatPrieviewModal() {
             $("#formatPrieviewModal").modal('show');
         };

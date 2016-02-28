@@ -14,13 +14,30 @@ $(document).ready(function () {
             var imgName = response;
             file.previewElement.classList.add("dz-success");
             console.log("Successfully uploaded :" + imgName);
-            //jcrop_api.destroy();
-            $("#imgCropped").attr("src", "../PhotoOrder/Images/" + imgName.replace(".jpg", "_resize.jpg"));
-            jcrop_api = $.Jcrop('#imgCropped', { aspectRatio: 1, setSelect : [60, 70, 540, 330] });
-           // jcrop_api.setImage("../PhotoOrder/Images/" + imgName.replace(".jpg", "_resize.jpg"));
-            
-            jcrop_api.bgOpacity=  .2,
+            if (jcrop_api != null) {
+                jcrop_api.destroy();
+            }
+           // $("#imgCropped").remove();
+            //$("#imgCropContainer").append("<img id='imgCropped' src='../PhotoOrder/Images/" + imgName.replace(".jpg", "_resized.jpg'") + " style='width: 500px;height:300px'/>");
+           // $("#imgCropped").attr("src", "../PhotoOrder/Images/" + imgName.replace(".jpg", "_resized.jpg"));
+            //$("#imgCropped").css("width", "500px");
+            //$("#imgCropped").css("height", "500px");
+            //$("#imgCropped").css("display", "block");
+            jcrop_api = $.Jcrop('#imgCropped', { setSelect: [1, 1, 1024, 576], onSelect: storeCoords });
+            jcrop_api.setImage("../PhotoOrder/Images/" + imgName.replace(".jpg", "_resized.jpg"), function() {
+                jcrop_api.setOptions({
+                    setSelect: [1, 1, 1024, 576],
+                    onSelect: storeCoords
+                });
+            });
+            //jcrop_api.setSelect= [60, 70, 540, 330];
             $("#pnlCrop").css("display", "block");
+           
+            //$("#imgCropped").css({
+            //    width: 500,
+            //    overflow: 'hidden'
+            //});
+            //jcrop_api = $.Jcrop('#imgCropped', { setSelect: [60, 70, 540, 330] });
         },
         error: function (file, response) {
             file.previewElement.classList.add("dz-error");

@@ -44,7 +44,7 @@ namespace VnetPhotoManager.Web
 
                 var name = (string)HttpContext.Current.Session["UploadedImage"];
                 var i = new ImageResizer.ImageJob(file, string.Format("~/PhotoOrder/Images/{0}_resized.<ext>", Path.GetFileNameWithoutExtension(name)), new ImageResizer.ResizeSettings(
-                    "width=500;format=jpg;mode=max")) { CreateParentDirectory = true };
+                    "width=1024;format=jpg;mode=max")) { CreateParentDirectory = true };
                 //Auto-create the uploads directory.
                 i.Build();
             }

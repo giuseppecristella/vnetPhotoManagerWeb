@@ -56,46 +56,46 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 var userDetail = _userDetailRepository.GetUserDetail(userEmail);
                 UserFolder = string.Format("{0}/{0}/{1}", userDetail.StructureCode, userDetail.UserName.Replace("@", "_"));
                 _printFormatsLookup = _printFormatRepository.GetPhotoPrintFormats(userEmail);
+                // imgCropped.ImageUrl = "~/PhotoOrder/Images/placeholder.png";
             }
         }
         protected void btnCrop_Click(object sender, EventArgs e)
         {
             if (Session["UploadedImage"] == null) return;
             var imageName = Session["UploadedImage"].ToString();
-
-            // Resize, e preview nella finestra modale
-            var w = string.IsNullOrEmpty(W.Value) ? 1004 : Convert.ToInt32(W.Value);
-            var h = string.IsNullOrEmpty(H.Value) ? 768 : Convert.ToInt32(H.Value);
-            var x = string.IsNullOrEmpty(X.Value) ? 100 : Convert.ToInt32(X.Value);
-            var y = string.IsNullOrEmpty(Y.Value) ? 100 : Convert.ToInt32(Y.Value);
-
             var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
-            // Calcolo larghezza immagine originale = 2048
-
+            byte[] cropImage;
+            var resizedWidth = 1024;
             using (var img = System.Drawing.Image.FromFile(string.Format("{0}{1}", path, imageName)))
             {
-                x = (int)Math.Floor((decimal)(x * ((float)img.Width / 500)));
-                y = (int)Math.Floor((decimal)(y * ((float)img.Width / 500)));
-                w = (int)Math.Floor((decimal)(w * ((float)img.Width / 500)));
-                h = (int)Math.Floor((decimal)(h * ((float)img.Width / 500)));
+                // Resize, e preview nella finestra modale
+                var w = W.Value.Equals("NaN") || string.IsNullOrEmpty(W.Value) ? img.Width : Convert.ToInt32(W.Value);
+                var h = H.Value.Equals("NaN") || string.IsNullOrEmpty(H.Value) ? img.Height : Convert.ToInt32(H.Value);
+                var x = X.Value.Equals("NaN") || string.IsNullOrEmpty(X.Value) ? 1 : Convert.ToInt32(X.Value);
+                var y = Y.Value.Equals("NaN") || string.IsNullOrEmpty(Y.Value) ? 1 : Convert.ToInt32(Y.Value);
+
+                x = (int)Math.Floor((decimal)(x * ((float)img.Width / resizedWidth)));
+                y = (int)Math.Floor((decimal)(y * ((float)img.Width / resizedWidth)));
+                w = (int)Math.Floor((decimal)(w * ((float)img.Width / resizedWidth)));
+                h = (int)Math.Floor((decimal)(h * ((float)img.Width / resizedWidth)));
 
                 if (x > img.Width) x = img.Width;
                 if (w > img.Width) x = img.Width;
                 if (y > img.Height) y = img.Height;
                 if (h > img.Height) y = img.Height;
+
+                // Calcolo percentuale di ridimensionamento e adeguo le coordinate di ritaglio
+                cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
+                //Path.GetFileNameWithoutExtension(imageName)
+
+                // Cancello la foto resized perchè mi serve solo per l'anteprima
+                File.Delete(string.Format("{0}{1}", path, string.Format("{0}_resized.jpg", Path.GetFileNameWithoutExtension(imageName))));
             }
-
-            // Calcolo percentuale di ridimensionamento e adeguo le coordinate di ritaglio
-            var cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
-            //Path.GetFileNameWithoutExtension(imageName)
-
-            // Cancello la foto resized perchè mi serve solo per l'anteprima
-            File.Delete(string.Format("{0}{1}", path, string.Format("{0}_resized.jpg", Path.GetFileNameWithoutExtension(imageName))));
-
             SaveImage(cropImage, path, imageName);
             UploadFileToFtp(cropImage, imageName, UserFolder);
+
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
-            pnlCrop.Visible = true;
+            //pnlCrop.Visible = true;
             btnOrder.Visible = true;
             Photos.Add(new PhotoViewModel { Name = imageName, Path = string.Format("images/{0}", imageName), FtpPath = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, UserFolder, imageName) });
             lvPhotos.DataSource = Photos;
