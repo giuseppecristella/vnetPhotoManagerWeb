@@ -179,7 +179,6 @@
     <Content Include="Account\Web.config" />
     <Content Include="PhotoOrder\CreateOrder.aspx" />
     <Content Include="PhotoOrder\DisplayImage.aspx" />
-    <Content Include="PhotoOrder\Images\HtmlPage1.html" />
     <Content Include="PhotoOrder\Images\placeholder.png" />
     <Content Include="PhotoOrder\OrderSuccess.aspx" />
     <Content Include="PhotoUploader.ashx" />
