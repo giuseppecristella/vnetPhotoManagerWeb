@@ -95,7 +95,7 @@
                     <asp:Button CssClass="btn btn-info pull-right" ID="btnAddToGrid" runat="server" Text="Salva" OnClick="btnCrop_Click" />
                 </div>
             </div>
-        </div>
+        </div> 
     </div>
 
 
