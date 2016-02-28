@@ -89,7 +89,7 @@
         <div id="previewPhotoDialog" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <%--   <asp:Panel runat="server" ClientIDMode="Static" ID="pnlCrop">  </asp:Panel>--%>
-                <asp:Image ClientIDMode="Static" ImageUrl="Images/placeholder.png" ID="imgCropped" runat="server" />
+                <asp:Image ClientIDMode="Static" ID="imgCropped" runat="server" />
 
                 <div class="modal-footer">
                     <asp:Button CssClass="btn btn-info pull-right" ID="btnAddToGrid" runat="server" Text="Salva" OnClick="btnCrop_Click" />
