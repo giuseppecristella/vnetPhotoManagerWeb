@@ -49,6 +49,24 @@ namespace VnetPhotoManager.Web.PhotoOrder {
         protected global::System.Web.UI.WebControls.Button btnAddToGrid;
         
         /// <summary>
+        /// lvSavedPhotos control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ListView lvSavedPhotos;
+        
+        /// <summary>
+        /// btnAddSavedPhotoToGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAddSavedPhotoToGrid;
+        
+        /// <summary>
         /// X control.
         /// </summary>
         /// <remarks>

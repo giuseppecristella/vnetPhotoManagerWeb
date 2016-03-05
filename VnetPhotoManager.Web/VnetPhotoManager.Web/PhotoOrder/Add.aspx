@@ -23,9 +23,14 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-md-12">
-            <div id="target">
+        <div class="col-md-6">
+            <div id="divAddAndCrop">
                 <input type="button" value="Aggiungi" class="btn btn-info" id="btnAddandCrop" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="divAddSavedPhoto">
+                <input type="button" value="Aggiungi" class="btn btn-info" id="btnAddSavedPhoto" />
             </div>
         </div>
     </div>
@@ -95,9 +100,40 @@
                     <asp:Button CssClass="btn btn-info pull-right" ID="btnAddToGrid" runat="server" Text="Salva" OnClick="btnCrop_Click" />
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
-
+    <div id="addSavedPhotoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <asp:ListView runat="server" ID="lvSavedPhotos">
+                    <LayoutTemplate>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Foto</th>
+                                    <th>Nome</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr runat="server" id="itemPlaceholder"></tr>
+                            </tbody>
+                        </table>
+                    </LayoutTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <td>
+                                <asp:Image Width="50" ID="imgPhoto" runat="server" ImageUrl='<%#Eval("Path") %>' /></td>
+                            <td>
+                                <asp:Label ID="lblName" runat="server" Text='<%#Eval("Name") %>' /></td>
+                        </tr>
+                    </ItemTemplate>
+                </asp:ListView>
+                <div class="modal-footer">
+                    <asp:Button CssClass="btn btn-info pull-right" ID="btnAddSavedPhotoToGrid" runat="server" Text="Salva" />
+                </div>
+            </div>
+        </div>
+    </div>
 
     <asp:HiddenField ClientIDMode="Static" ID="X" runat="server" />
     <asp:HiddenField ClientIDMode="Static" ID="Y" runat="server" />

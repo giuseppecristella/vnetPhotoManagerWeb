@@ -92,6 +92,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 };
                 _orderRepository.SaveOrderDetail(orderDetail);
             }
+            Photos = null;
             Session["OrderNumber"] = orderNum.ToString();
             Response.Redirect("OrderSuccess.aspx");
         }

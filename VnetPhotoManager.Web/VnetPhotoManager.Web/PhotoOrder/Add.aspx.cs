@@ -21,7 +21,9 @@ namespace VnetPhotoManager.Web.PhotoOrder
         //private static 
         private readonly UserDetailRepository _userDetailRepository;
         private readonly PrintFormatRepository _printFormatRepository;
-        public static string UserFolder { get; private set; }
+        public static string FtpUserFolder { get; private set; }
+        public static string WebServerUserFolder { get; private set; }
+        public static string WebServerTmpUserFolder { get; private set; }
         public static List<PrintFormat> _printFormatsLookup { get; set; }
         // public List<PhotoViewModel> Photos { get; set; }
 
@@ -49,15 +51,15 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!Page.IsPostBack)
-            {
-                if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
-                var userEmail = (string)Session["UserName"];
-                var userDetail = _userDetailRepository.GetUserDetail(userEmail);
-                UserFolder = string.Format("{0}/{0}/{1}", userDetail.StructureCode, userDetail.UserName.Replace("@", "_"));
-                _printFormatsLookup = _printFormatRepository.GetPhotoPrintFormats(userEmail);
-                // imgCropped.ImageUrl = "~/PhotoOrder/Images/placeholder.png";
-            }
+            if (Page.IsPostBack) return;
+            if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
+            var userEmail = (string)Session["UserName"];
+            var userDetail = _userDetailRepository.GetUserDetail(userEmail);
+            FtpUserFolder = string.Format("{0}/{0}/{1}", userDetail.StructureCode, userDetail.UserName.Replace("@", "_"));
+            WebServerUserFolder = string.Format("{0}/{1}/", "~/PhotoOrder/Images", userDetail.UserName.Replace("@", "_"));
+            WebServerTmpUserFolder = string.Format("{0}/{1}/{2}/", "~/PhotoOrder/Images", userDetail.UserName.Replace("@", "_"), "tmp");
+            _printFormatsLookup = _printFormatRepository.GetPhotoPrintFormats(userEmail);
+            // imgCropped.ImageUrl = "~/PhotoOrder/Images/placeholder.png";
         }
         protected void btnCrop_Click(object sender, EventArgs e)
         {
@@ -91,13 +93,17 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 // Cancello la foto resized perchè mi serve solo per l'anteprima
                 File.Delete(string.Format("{0}{1}", path, string.Format("{0}_resized.jpg", Path.GetFileNameWithoutExtension(imageName))));
             }
+            // Salvo l'immagine ritagliata nella cartella tmp ordine dell'utente
+            // e la cancello dalla root
+            File.Delete(HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/" + imageName));
+            path = WebServerTmpUserFolder;
             SaveImage(cropImage, path, imageName);
-            UploadFileToFtp(cropImage, imageName, UserFolder);
+            UploadFileToFtp(cropImage, imageName, FtpUserFolder);
 
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
             //pnlCrop.Visible = true;
             btnOrder.Visible = true;
-            Photos.Add(new PhotoViewModel { Name = imageName, Path = string.Format("images/{0}", imageName), FtpPath = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, UserFolder, imageName) });
+            Photos.Add(new PhotoViewModel { Name = imageName, Path = string.Format("images/{0}", imageName), FtpPath = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, FtpUserFolder, imageName) });
             lvPhotos.DataSource = Photos;
             lvPhotos.DataBind();
             imgCropped.ImageUrl = string.Empty;
@@ -202,6 +208,10 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
         private static void SaveImage(byte[] cropImage, string path, string imageName)
         {
+            var f = Directory.GetFiles(path);
+            path = "peppe";
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
             // Check se esiste già un file con lo stesso nome
             using (var ms = new MemoryStream(cropImage, 0, cropImage.Length))
             {
