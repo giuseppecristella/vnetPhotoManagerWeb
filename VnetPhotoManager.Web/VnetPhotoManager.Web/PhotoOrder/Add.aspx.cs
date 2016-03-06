@@ -21,10 +21,11 @@ namespace VnetPhotoManager.Web.PhotoOrder
         //private static 
         private readonly UserDetailRepository _userDetailRepository;
         private readonly PrintFormatRepository _printFormatRepository;
+        private readonly PhotoOrderRepository _photoOrderRepository;
         public static string FtpUserFolder { get; private set; }
         public static string WebServerUserFolder { get; private set; }
         public static string WebServerTmpUserFolder { get; private set; }
-        public static List<PrintFormat> _printFormatsLookup { get; set; }
+        public static List<PrintFormat> PrintFormatsLookup { get; set; }
         // public List<PhotoViewModel> Photos { get; set; }
 
         public List<PhotoViewModel> Photos
@@ -47,6 +48,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
         {
             _userDetailRepository = new UserDetailRepository();
             _printFormatRepository = new PrintFormatRepository();
+            _photoOrderRepository = new PhotoOrderRepository();
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -58,9 +60,11 @@ namespace VnetPhotoManager.Web.PhotoOrder
             FtpUserFolder = string.Format("{0}/{0}/{1}", userDetail.StructureCode, userDetail.UserName.Replace("@", "_"));
             WebServerUserFolder = string.Format("{0}/{1}/", "~/PhotoOrder/Images", userDetail.UserName.Replace("@", "_"));
             WebServerTmpUserFolder = string.Format("{0}/{1}/{2}/", "~/PhotoOrder/Images", userDetail.UserName.Replace("@", "_"), "tmp");
-            _printFormatsLookup = _printFormatRepository.GetPhotoPrintFormats(userEmail);
+            PrintFormatsLookup = _printFormatRepository.GetPhotoPrintFormats(userEmail);
             // imgCropped.ImageUrl = "~/PhotoOrder/Images/placeholder.png";
+            BindPhotosOrder();
         }
+
         protected void btnCrop_Click(object sender, EventArgs e)
         {
             if (Session["UploadedImage"] == null) return;
@@ -93,12 +97,12 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 // Cancello la foto resized perchè mi serve solo per l'anteprima
                 File.Delete(string.Format("{0}{1}", path, string.Format("{0}_resized.jpg", Path.GetFileNameWithoutExtension(imageName))));
             }
-            // Salvo l'immagine ritagliata nella cartella tmp ordine dell'utente
+            // Salvo l'immagine ritagliata nella cartella del web server
             // e la cancello dalla root
             File.Delete(HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/" + imageName));
-            path = WebServerTmpUserFolder;
+            path = WebServerUserFolder;
             SaveImage(cropImage, path, imageName);
-            UploadFileToFtp(cropImage, imageName, FtpUserFolder);
+            //UploadFileToFtp(cropImage, imageName, FtpUserFolder);
 
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
             //pnlCrop.Visible = true;
@@ -170,7 +174,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
             {
                 var ddlPrintFormats = e.Item.FindControl("ddlPrintFormats") as DropDownList;
                 if (ddlPrintFormats == null) return;
-                ddlPrintFormats.DataSource = _printFormatsLookup;
+                ddlPrintFormats.DataSource = PrintFormatsLookup;
                 ddlPrintFormats.DataTextField = "Description";
                 ddlPrintFormats.DataValueField = "ProductId";
                 ddlPrintFormats.DataBind();
@@ -202,9 +206,8 @@ namespace VnetPhotoManager.Web.PhotoOrder
         #region Private Methods
         private double SetItemPrice(int printFormatId)
         {
-            return _printFormatsLookup.First(pf => pf.ProductId.Equals(printFormatId)).Price;
+            return PrintFormatsLookup.First(pf => pf.ProductId.Equals(printFormatId)).Price;
         }
-
 
         private static void SaveImage(byte[] cropImage, string path, string imageName)
         {
@@ -308,7 +311,33 @@ namespace VnetPhotoManager.Web.PhotoOrder
             }
             return true;
         }
+
+        private void BindPhotosOrder()
+        {
+            if (Session["UserName"] == null) return;// Redirect to home
+            lvSavedPhotos.DataSource = _photoOrderRepository.GetAll((string)Session["UserName"]);
+            lvSavedPhotos.DataBind();
+        }
         #endregion
+
+        protected void btnAddSavedPhotoToGrid_OnClick(object sender, EventArgs e)
+        {
+            foreach (ListViewItem row in lvSavedPhotos.Items)
+            {
+                var cbSelectSavedPhoto = row.FindControl("cbSelectSavedPhoto") as CheckBox;
+                if (cbSelectSavedPhoto == null) continue;
+                if (!cbSelectSavedPhoto.Checked) continue;
+
+                var hfFtpPath = row.FindControl("hfFtpPath") as HiddenField;
+                if (hfFtpPath == null) continue;
+                var lblName = row.FindControl("lblName") as Label;
+                if (lblName == null) continue;
+
+                Photos.Add(new PhotoViewModel { Name = lblName.Text, Path = string.Format("images/{0}", lblName.Text), FtpPath = hfFtpPath.Value });
+            }
+            lvPhotos.DataSource = Photos;
+            lvPhotos.DataBind();
+        }
     }
 
     public class PhotoViewModel

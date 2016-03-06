@@ -30,7 +30,7 @@
         </div>
         <div class="col-md-6">
             <div id="divAddSavedPhoto">
-                <input type="button" value="Aggiungi" class="btn btn-info" id="btnAddSavedPhoto" />
+                <input type="button" value="Sfoglia" class="btn btn-info" id="btnAddSavedPhoto" />
             </div>
         </div>
     </div>
@@ -110,6 +110,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Foto</th>
                                     <th>Nome</th>
                                 </tr>
@@ -122,14 +123,19 @@
                     <ItemTemplate>
                         <tr>
                             <td>
-                                <asp:Image Width="50" ID="imgPhoto" runat="server" ImageUrl='<%#Eval("Path") %>' /></td>
+                                <asp:CheckBox runat="server" ID="cbSelectSavedPhoto" />
+                            </td>
                             <td>
-                                <asp:Label ID="lblName" runat="server" Text='<%#Eval("Name") %>' /></td>
-                        </tr>
+                                <asp:Image Width="50" ID="imgPhoto" runat="server" ImageUrl='<%# string.Format("images/{0}", Eval("Name")) %>' /></td>
+                            <td>
+                                <asp:Label ID="lblName" runat="server" Text='<%# Eval("Name") %>' />
+                                <asp:HiddenField runat="server" ID="hfFtpPath" Value='<%# Eval("FtpPath") %>' />
+                            </td>
+                            </tr>
                     </ItemTemplate>
                 </asp:ListView>
                 <div class="modal-footer">
-                    <asp:Button CssClass="btn btn-info pull-right" ID="btnAddSavedPhotoToGrid" runat="server" Text="Salva" />
+                    <asp:Button CssClass="btn btn-info pull-right" ID="btnAddSavedPhotoToGrid" OnClick="btnAddSavedPhotoToGrid_OnClick" runat="server" Text="Salva" />
                 </div>
             </div>
         </div>
