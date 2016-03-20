@@ -9,8 +9,9 @@
     <script src="../Scripts/bootstrap.js"></script>
     <script src="Scripts/PhotoOrder.js"></script>
 
+    <% if (PhotoToAdd == null)
+       { %>
     <h2>Upload Foto</h2>
-
     <div class="row">
         <div class="col-md-12">
             <div id="dZUpload" class="dropzone needsclick dz-clickable">
@@ -34,10 +35,11 @@
             </div>
         </div>
     </div>
+    <% } %>
     <br />
     <div class="row">
-        <h2>Foto caricate</h2>
-        <p>per procedere con l'ordine delle foto aggiunte, cliccare il pulsante Crea Ordine</p>
+        <h2>Il tuo carrello</h2>
+        <p>Per procedere con l'ordine delle foto aggiunte, cliccare il pulsante Crea Ordine</p>
         <asp:ListView runat="server" ID="lvPhotos" OnItemCommand="lvPhotos_OnItemCommand" OnItemDataBound="lvPhotos_OnItemDataBound">
             <LayoutTemplate>
                 <table class="table">
@@ -49,7 +51,6 @@
                             <th></th>
                             <th>Prezzo Unit.</th>
                             <th>Num. Copie</th>
-                            <%--   <th>Prezzo Tot.</th>--%>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,13 +68,14 @@
                     <td>
                         <asp:Label ID="lblName" runat="server" Text='<%#Eval("Name") %>' /></td>
                     <td>
-                        <asp:DropDownList runat="server" ID="ddlPrintFormats" AutoPostBack="True" OnSelectedIndexChanged="ddlPrintFormat_OnSelectedIndexChanged" />
+                       <asp:Label runat="server" ID="lblPrintFormat" Text='<%#Eval("FormatDescription") %>'></asp:Label> 
+                        <%--<asp:DropDownList runat="server" ID="ddlPrintFormats" AutoPostBack="True" OnSelectedIndexChanged="ddlPrintFormat_OnSelectedIndexChanged" />--%>
                     </td>
                     <td>
                         <asp:LinkButton runat="server" ID="lbFormatPreview" Text="Anteprima Formato" CommandName="FormatPrieview"></asp:LinkButton>
                     </td>
                     <td>
-                        <asp:Label ID="lblPrice" runat="server" Text="" />
+                        <asp:Label ID="lblPrice" Text='<%#Eval("UnitPrice") %>' runat="server"  />
                     </td>
                     <td>
                         <asp:TextBox min="1" type="number" Text="1" CssClass="form-control" runat="server" ID="txtCopies"></asp:TextBox>
@@ -131,7 +133,7 @@
                                 <asp:Label ID="lblName" runat="server" Text='<%# Eval("Name") %>' />
                                 <asp:HiddenField runat="server" ID="hfFtpPath" Value='<%# Eval("FtpPath") %>' />
                             </td>
-                            </tr>
+                        </tr>
                     </ItemTemplate>
                 </asp:ListView>
                 <div class="modal-footer">

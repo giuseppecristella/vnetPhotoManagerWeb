@@ -177,10 +177,12 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Account\Web.config" />
+    <Content Include="PhotoOrder\Categories.aspx" />
     <Content Include="PhotoOrder\CreateOrder.aspx" />
     <Content Include="PhotoOrder\DisplayImage.aspx" />
     <Content Include="PhotoOrder\Images\placeholder.png" />
     <Content Include="PhotoOrder\OrderSuccess.aspx" />
+    <Content Include="PhotoOrder\Products.aspx" />
     <Content Include="PhotoUploader.ashx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -420,6 +422,13 @@
     <Compile Include="PhotoOrder\Add.aspx.designer.cs">
       <DependentUpon>Add.aspx</DependentUpon>
     </Compile>
+    <Compile Include="PhotoOrder\Categories.aspx.cs">
+      <DependentUpon>Categories.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PhotoOrder\Categories.aspx.designer.cs">
+      <DependentUpon>Categories.aspx</DependentUpon>
+    </Compile>
     <Compile Include="PhotoOrder\CreateOrder.aspx.cs">
       <DependentUpon>CreateOrder.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -440,6 +449,13 @@
     </Compile>
     <Compile Include="PhotoOrder\OrderSuccess.aspx.designer.cs">
       <DependentUpon>OrderSuccess.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PhotoOrder\Products.aspx.cs">
+      <DependentUpon>Products.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PhotoOrder\Products.aspx.designer.cs">
+      <DependentUpon>Products.aspx</DependentUpon>
     </Compile>
     <Compile Include="PhotoUploader.ashx.cs">
       <DependentUpon>PhotoUploader.ashx</DependentUpon>
@@ -526,6 +542,8 @@
           <DevelopmentServerPort>25492</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:25492/</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:25492/</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

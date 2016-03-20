@@ -68,10 +68,9 @@ namespace VnetPhotoManager.Repository
                 Code = Convert.ToString(record["CodiceStruttura"]),
                 Description = Convert.ToString(record["Descrizione"]),
                 Price = Convert.ToDouble(record["Prezzo"]),
+                CategoryId = Convert.ToInt32(record["ID_Categoria"]),
                 ImgThumb = (Byte[])record["Immagine"]
             };
         }
-
     }
-
 }

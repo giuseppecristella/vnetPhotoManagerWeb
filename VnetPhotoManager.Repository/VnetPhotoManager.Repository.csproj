@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CategoryRepository.cs" />
     <Compile Include="PhotoOrderRepository.cs" />
     <Compile Include="UserDetailRepository.cs" />
     <Compile Include="OrderRepository.cs" />
