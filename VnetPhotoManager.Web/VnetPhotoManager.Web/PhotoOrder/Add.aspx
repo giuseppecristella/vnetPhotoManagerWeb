@@ -24,13 +24,9 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-3">
             <div id="divAddAndCrop">
                 <input type="button" value="Aggiungi" class="btn btn-info" id="btnAddandCrop" />
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div id="divAddSavedPhoto">
                 <input type="button" value="Sfoglia" class="btn btn-info" id="btnAddSavedPhoto" />
             </div>
         </div>
@@ -51,6 +47,7 @@
                             <th></th>
                             <th>Prezzo Unit.</th>
                             <th>Num. Copie</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,28 +65,23 @@
                     <td>
                         <asp:Label ID="lblName" runat="server" Text='<%#Eval("Name") %>' /></td>
                     <td>
-                       <asp:Label runat="server" ID="lblPrintFormat" Text='<%#Eval("FormatDescription") %>'></asp:Label> 
-                        <%--<asp:DropDownList runat="server" ID="ddlPrintFormats" AutoPostBack="True" OnSelectedIndexChanged="ddlPrintFormat_OnSelectedIndexChanged" />--%>
+                        <asp:Label runat="server" ID="lblPrintFormat" Text='<%#Eval("FormatDescription") %>'></asp:Label>
                     </td>
                     <td>
                         <asp:LinkButton runat="server" ID="lbFormatPreview" Text="Anteprima Formato" CommandName="FormatPrieview"></asp:LinkButton>
                     </td>
                     <td>
-                        <asp:Label ID="lblPrice" Text='<%#Eval("UnitPrice") %>' runat="server"  />
+                        <asp:Label ID="lblPrice" Text='<%#Eval("UnitPrice") %>' runat="server" />
                     </td>
                     <td>
                         <asp:TextBox min="1" type="number" Text="1" CssClass="form-control" runat="server" ID="txtCopies"></asp:TextBox>
-                        <%-- <asp:RequiredFieldValidator ID="rqCopies" runat="server" ControlToValidate="txtCopies" ValidationGroup="vgOrder"
-                            CssClass="text-danger" ErrorMessage="Campo obbligatorio." />--%>
                     </td>
-                    <%--  <td>
-                         <asp:Label ID="lblTotPrice" runat="server" Text="" />
-                    </td>--%>
+                    <td><asp:LinkButton runat="server" ID="lbDeletePhoto" CommandName="DeletePhoto">Elimina</asp:LinkButton> </td>
                 </tr>
             </ItemTemplate>
         </asp:ListView>
         <asp:Button CssClass="btn btn-info" Visible="False" ID="btnOrder" runat="server" Text="Crea Ordine" OnClick="btnOrder_OnClick" />
-
+        <asp:Button CssClass="btn btn-info" ID="btnContinueUpload" runat="server" Text="Aggiungi altra foto" OnClick="btnContinueUpload_OnClick" />
     </div>
     <!-- Modal HTML -->
     <div id="addPhotoModal" class="modal fade" role="dialog">

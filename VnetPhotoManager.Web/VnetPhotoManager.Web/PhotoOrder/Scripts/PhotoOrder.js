@@ -4,6 +4,8 @@ $(document).ready(function () {
     // Configuro Dropzone
     var dropZone = new Dropzone("div#dZUpload", {
         url: "../PhotoUploader.ashx",
+        acceptedFiles: "image/*",
+        maxFiles: 1,
         addRemoveLinks: true,
         removedfile: function (file) {
             $("#pnlCrop").css("display", 'none');
@@ -37,6 +39,10 @@ $(document).ready(function () {
         error: function (file, response) {
             file.previewElement.classList.add("dz-error");
         }
+    });
+
+    dropZone.on("maxfilesexceeded", function(file){
+        this.removeFile(file);
     });
 
 

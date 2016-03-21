@@ -55,7 +55,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 Session["PhotoToAdd"] = value;
             }
         }
-        
+
 
         #region Ctor
         public Add()
@@ -132,7 +132,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 Format = _printFormat.ProductId,
                 FormatDescription = _printFormat.Description,
                 FtpPath = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, FtpUserFolder, imageName),
-                UnitPrice = (decimal) _printFormat.Price
+                UnitPrice = (decimal)_printFormat.Price
             };
             Photos.Add(PhotoToAdd);
             lvPhotos.DataSource = Photos;
@@ -142,11 +142,11 @@ namespace VnetPhotoManager.Web.PhotoOrder
         }
         protected void btnOrder_OnClick(object sender, EventArgs e)
         {
-            Photos.Clear();
-            foreach (var item in lvPhotos.Items)
-            {
-                BindItemToPhotoVM(item);
-            }
+            //Photos.Clear();
+            //foreach (var item in lvPhotos.Items)
+            //{
+            //    BindItemToPhotoVM(item);
+            //}
             Response.Redirect("CreateOrder.aspx");
         }
         protected void btnAddSavedPhotoToGrid_OnClick(object sender, EventArgs e)
@@ -223,13 +223,24 @@ namespace VnetPhotoManager.Web.PhotoOrder
         }
         protected void lvPhotos_OnItemCommand(object sender, ListViewCommandEventArgs e)
         {
-            if (!String.Equals(e.CommandName, "FormatPrieview")) return;
-            // var dataItem = (ListViewDataItem) e.Item;
-            var ddlPrintFormats = e.Item.FindControl("ddlPrintFormats") as DropDownList;
-            if (ddlPrintFormats == null) return;
-            var selectedItem = ddlPrintFormats.SelectedItem.Value;
-            imgPrintFormat.ImageUrl = string.Format("DisplayImage.aspx?ProductId={0}", selectedItem);
-            AppUtility.RegisterStartUpScript(Page, "ShowModal", "openFormatPrieviewModal()");
+            if (string.Equals(e.CommandName, "FormatPrieview"))
+            {
+                // var dataItem = (ListViewDataItem) e.Item;
+                var ddlPrintFormats = e.Item.FindControl("ddlPrintFormats") as DropDownList;
+                if (ddlPrintFormats == null) return;
+                var selectedItem = ddlPrintFormats.SelectedItem.Value;
+                imgPrintFormat.ImageUrl = string.Format("DisplayImage.aspx?ProductId={0}", selectedItem);
+                AppUtility.RegisterStartUpScript(Page, "ShowModal", "openFormatPrieviewModal()");
+            }
+            if (string.Equals(e.CommandName, "DeletePhoto"))
+            {
+                Photos.Remove(PhotoToAdd);
+                var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
+                File.Delete(string.Format("{0}{1}", path, PhotoToAdd.Name));
+                PhotoToAdd = null;
+                lvPhotos.DataSource = Photos;
+                lvPhotos.DataBind();
+            }
         }
         #endregion
 
@@ -391,6 +402,10 @@ namespace VnetPhotoManager.Web.PhotoOrder
         }
         #endregion
 
+        protected void btnContinueUpload_OnClick(object sender, EventArgs e)
+        {
+            Response.Redirect("~/PhotoOrder/Categories");
+        }
     }
 
     public class PhotoViewModel
