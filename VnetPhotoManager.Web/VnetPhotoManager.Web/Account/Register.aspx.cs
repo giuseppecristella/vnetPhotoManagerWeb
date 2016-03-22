@@ -60,7 +60,7 @@ namespace VnetPhotoManager.Web.Account
                 connection.Close();
             }
             return true;
-        }
+        } 
 
         public int CreateUserWithClientCode(string clientCodeFromUI)
         {
