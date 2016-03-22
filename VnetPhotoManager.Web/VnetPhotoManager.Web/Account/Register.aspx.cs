@@ -58,7 +58,7 @@ namespace VnetPhotoManager.Web.Account
                     command.ExecuteNonQuery();
                 } 
                 connection.Close();
-            }
+            } 
             return true;
         } 
 
