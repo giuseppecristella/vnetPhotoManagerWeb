@@ -54,7 +54,7 @@ namespace VnetPhotoManager.Web.Account
                     command.Parameters.AddWithValue("@RegistratoIl", registratoIl);
                     command.Parameters.AddWithValue("@Attivo", attivo);
 
-                    connection.Open();
+                    connection.Open(); 
                     command.ExecuteNonQuery();
                 } 
                 connection.Close();
