@@ -70,12 +70,11 @@ namespace VnetPhotoManager.Web.PhotoOrder
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Page.IsPostBack) return;
+            if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
             if (string.IsNullOrEmpty(Request.QueryString["CatId"]) && string.IsNullOrEmpty(Request.QueryString["ProdId"])) return;
             if (!CheckQueryStrings()) return;
 
             PhotoToAdd = null;
-
-            if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
             var userEmail = (string)Session["UserName"];
             var userDetail = _userDetailRepository.GetUserDetail(userEmail);
             FtpUserFolder = GetUserFolder(userDetail);
@@ -153,7 +152,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
         {
             foreach (ListViewItem row in lvSavedPhotos.Items)
             {
-                var cbSelectSavedPhoto = row.FindControl("cbSelectSavedPhoto") as CheckBox;
+                var cbSelectSavedPhoto = row.FindControl("cbSelectSavedPhoto") as RadioButton;
                 if (cbSelectSavedPhoto == null) continue;
                 if (!cbSelectSavedPhoto.Checked) continue;
 
@@ -174,6 +173,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
             }
             lvPhotos.DataSource = Photos;
             lvPhotos.DataBind();
+            btnOrder.Visible = true;
         }
         //protected void ddlPrintFormat_OnSelectedIndexChanged(object sender, EventArgs e)
         //{
@@ -240,6 +240,19 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 PhotoToAdd = null;
                 lvPhotos.DataSource = Photos;
                 lvPhotos.DataBind();
+            }
+        }
+        protected void btnContinueUpload_OnClick(object sender, EventArgs e)
+        {
+            Response.Redirect("~/PhotoOrder/Categories");
+        }
+        protected void lvSavedPhotos_OnItemDataBound(object sender, ListViewItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListViewItemType.DataItem)
+            {
+                RadioButton cbSelectSavedPhoto = (RadioButton)e.Item.FindControl("cbSelectSavedPhoto");
+                string script = "SetUniqueRadioButton('lvSavedPhotos',this)";
+                cbSelectSavedPhoto.Attributes.Add("onclick", script);
             }
         }
         #endregion
@@ -401,11 +414,6 @@ namespace VnetPhotoManager.Web.PhotoOrder
             lvSavedPhotos.DataBind();
         }
         #endregion
-
-        protected void btnContinueUpload_OnClick(object sender, EventArgs e)
-        {
-            Response.Redirect("~/PhotoOrder/Categories");
-        }
     }
 
     public class PhotoViewModel

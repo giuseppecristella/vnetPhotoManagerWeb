@@ -16,7 +16,7 @@ namespace VnetPhotoManager.Repository
             {
                 conn.Open();
 
-                var command = new SqlCommand(@"select percorso, o.id_ordine from ordini o inner join dettordine d on o.id_ordine = d.id_ordine where o.codicecliente = @clientCode", conn);
+                var command = new SqlCommand(@"select distinct percorso from ordini o inner join dettordine d on o.id_ordine = d.id_ordine where o.codicecliente = @clientCode", conn);
                 command.Parameters.Add("@clientCode", SqlDbType.VarChar).Value = clientCode;
 
                 using (SqlDataReader dr = command.ExecuteReader(CommandBehavior.SingleResult))
@@ -36,7 +36,7 @@ namespace VnetPhotoManager.Repository
             return new PhotoOrder
             {
                 Name = Path.GetFileName(Convert.ToString(record["percorso"])),
-                OrderId = Convert.ToInt32(record["id_ordine"]),
+                //OrderId = Convert.ToInt32(record["id_ordine"]),
                 FtpPath = Convert.ToString(record["percorso"]),
             };
         }

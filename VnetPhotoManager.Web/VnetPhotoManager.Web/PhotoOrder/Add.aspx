@@ -25,10 +25,9 @@
     <br />
     <div class="row">
         <div class="col-md-3">
-            <div id="divAddAndCrop">
-                <input type="button" value="Aggiungi" class="btn btn-info" id="btnAddandCrop" />
-                <input type="button" value="Sfoglia" class="btn btn-info" id="btnAddSavedPhoto" />
-            </div>
+            <%--<div id="divAddAndCrop"></div>--%>
+            <input type="button" value="Aggiungi" class="btn btn-info" id="btnAddandCrop" />
+            <input type="button" value="Sfoglia" class="btn btn-info" id="btnAddSavedPhoto" />
         </div>
     </div>
     <% } %>
@@ -76,7 +75,9 @@
                     <td>
                         <asp:TextBox min="1" type="number" Text="1" CssClass="form-control" runat="server" ID="txtCopies"></asp:TextBox>
                     </td>
-                    <td><asp:LinkButton runat="server" ID="lbDeletePhoto" CommandName="DeletePhoto">Elimina</asp:LinkButton> </td>
+                    <td>
+                        <asp:LinkButton runat="server" ID="lbDeletePhoto" CommandName="DeletePhoto">Elimina</asp:LinkButton>
+                    </td>
                 </tr>
             </ItemTemplate>
         </asp:ListView>
@@ -99,7 +100,7 @@
     <div id="addSavedPhotoModal" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <asp:ListView runat="server" ID="lvSavedPhotos">
+                <asp:ListView runat="server" ID="lvSavedPhotos" OnItemDataBound="lvSavedPhotos_OnItemDataBound">
                     <LayoutTemplate>
                         <table class="table">
                             <thead>
@@ -117,7 +118,7 @@
                     <ItemTemplate>
                         <tr>
                             <td>
-                                <asp:CheckBox runat="server" ID="cbSelectSavedPhoto" />
+                                <asp:RadioButton runat="server" ClientIDMode="Static" GroupName="rbSavedPhoto"  ID="cbSelectSavedPhoto" />
                             </td>
                             <td>
                                 <asp:Image Width="50" ID="imgPhoto" runat="server" ImageUrl='<%# string.Format("images/{0}", Eval("Name")) %>' /></td>
@@ -161,6 +162,19 @@
         //    $("#addPhotoModal").modal('show');
 
         //});
+
+        function SetUniqueRadioButton(nameregex, current) {
+            re = new RegExp(nameregex);
+            for (i = 0; i < document.forms[0].elements.length; i++) {
+                elm = document.forms[0].elements[i]
+                if (elm.type == 'radio') {
+                    if (re.test(elm.name)) {
+                        elm.checked = false;
+                    }
+                }
+            }
+            current.checked = true;
+        }
     </script>
 
 </asp:Content>

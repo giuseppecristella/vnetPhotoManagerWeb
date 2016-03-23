@@ -86,18 +86,20 @@ $(document).ready(function () {
         $("#H").val(c.h);
     };
 
-    $("#divAddAndCrop").click(function () {
+    $("#btnAddandCrop").click(function () {
         if (dropZone.getAcceptedFiles().length > 0) {
             $("#addPhotoModal").modal('show');
         }
     });
 
-    $("#divAddSavedPhoto").click(function () {
+    $("#btnAddSavedPhoto").click(function () {
         $("#addSavedPhotoModal").modal('show');
     });
 
     var openAlreadyExistModal = function () {
         $("#addPhotoModal").modal('show');
     }
+
+   
 
 });
