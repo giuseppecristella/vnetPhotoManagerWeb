@@ -7,18 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VnetPhotoManager.Web.PhotoOrder {
+namespace VnetPhotoManager.Web.Account {
     
     
-    public partial class Categories {
+    public partial class EventLogin {
         
         /// <summary>
-        /// lvCategories control.
+        /// txtPassword control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView lvCategories;
+        protected global::System.Web.UI.WebControls.TextBox txtPassword;
     }
 }

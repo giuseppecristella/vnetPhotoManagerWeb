@@ -13,6 +13,30 @@ namespace VnetPhotoManager.Repository
                 
         }
 
+        public Category GetCategoryById(int categoryId)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+
+                SqlCommand command = new SqlCommand(@"SELECT * FROM CATEGORIE WHERE ID_CategoriaAdmin=@categoryId", conn);
+                command.Parameters.Add("@categoryId", SqlDbType.Int).Value = categoryId;
+
+                using (SqlDataReader dr = command.ExecuteReader(CommandBehavior.SingleResult))
+                {
+                    dr.Read();
+                    return new Category
+                    {
+                        Description = Convert.ToString(dr["Descrizione"]),
+                        CategoryId = Convert.ToInt32(dr["ID_Categoria"]),
+                        CategoryIdAdmin = Convert.ToInt32(dr["ID_CategoriaAdmin"]),
+                        IsEvent = Convert.ToBoolean(dr["Manifestazione"]),
+                        Password = Convert.ToString(dr["Password"])
+                    };
+                }
+            }
+        }
+
         public List<Category> GetCategories(string userEmail)
         {
             using (SqlConnection conn = new SqlConnection(ConnectionString))
@@ -58,7 +82,10 @@ namespace VnetPhotoManager.Repository
             {
                 Description = Convert.ToString(record["Descrizione"]),
                 //ImgThumb = (Byte[])record["Immagine"],
-                CategoryId = Convert.ToInt32(record["ID_Categoria"]), 
+                CategoryId = Convert.ToInt32(record["ID_Categoria"]),
+                IsEvent = Convert.ToBoolean(record["Manifestazione"]),
+                Password = Convert.ToString(record["Password"]),
+                CategoryIdAdmin = Convert.ToInt32(record["ID_CategoriaAdmin"])
             };
         }
     }

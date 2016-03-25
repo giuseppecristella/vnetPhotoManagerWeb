@@ -25,7 +25,7 @@
                          <asp:Image Width="50" ID="imgPhotoCategory" runat="server"  />
                     </td>
                     <td>
-                        <a href='Products.aspx?CatId=<%# Eval("CategoryId") %>'><asp:Literal ID="lblName" runat="server" Text='<%#Eval("Description") %>' /></a>
+                        <a href='Products.aspx?CatId=<%# Eval("CategoryId") %>&CatAdminId=<%# Eval("CategoryIdAdmin") %>'><asp:Literal ID="lblName" runat="server" Text='<%#Eval("Description") %>' /></a>
                     </td>
                 </tr>
             </ItemTemplate>
