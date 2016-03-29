@@ -14,11 +14,11 @@ namespace VnetPhotoManager.Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
-        //void Session_End(Object sender, EventArgs E)
-        //{
-        //    // Clean up session resources
-        //    var test = Session["Photos"] as string;
-        //}
+        void Session_End(Object sender, EventArgs E)
+        {
+            // Clean up session resources
+            var test = Session["Photos"] as string;
+        }
         void Application_PreRequestHandlerExecute()
         {
             var page = Context.Handler as Page;

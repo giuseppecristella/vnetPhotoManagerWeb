@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Web;
 using System.Web.UI.WebControls;
 using VnetPhotoManager.Domain;
 using VnetPhotoManager.Repository;
@@ -18,7 +20,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
         private static string _ftpUrl = "46.228.255.118";
         private static string _ftpUser = "user1";
         private static string _ftpPassword = "utente12345";
-
+        public static string FtpUserFolder { get; private set; }
         public List<PhotoViewModel> Photos
         {
             get
@@ -50,16 +52,30 @@ namespace VnetPhotoManager.Web.PhotoOrder
             var userEmail = (string)Session["UserName"];
             var userDetail = _userDetailRepository.GetUserDetail(userEmail);
             if (userEmail != userDetail.UserName) return;
-
+            FtpUserFolder = GetUserFolder(userDetail);
             //BindPrintFormats(userEmail);
             BindPhotosList();
             BindPaymentTypes(userDetail.StructureCode);
+        }
+
+        private string GetUserFolder(UserDetail userDetail)
+        {
+            return string.Format("{0}/{0}/{1}", userDetail.StructureCode, userDetail.UserName.Replace("@", "_"));
         }
 
         protected void btnCreateOrder_OnClick(object sender, EventArgs e)
         {
             if (Session["UserName"] == null) Response.Redirect("~/Account/Login.aspx");
             var userEmail = Session["UserName"].ToString();
+
+            var photosToUpload = Photos.Where(p => p.IsNewPhoto);
+            var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
+            foreach (var ph in photosToUpload)
+            {
+                byte[] buff = System.IO.File.ReadAllBytes(path + ph.Name);
+                UploadFileToFtp(buff, ph.Name, FtpUserFolder);
+            }
+
             var userDetail = _userDetailRepository.GetUserDetail(userEmail);
             var lastOrderNum = _orderRepository.GetLastOrder();
             var orderNum = (lastOrderNum == null) ? 1 : lastOrderNum.OrderNumber + 1;
@@ -104,13 +120,13 @@ namespace VnetPhotoManager.Web.PhotoOrder
             ddlPayments.DataValueField = "PaymentId";
             ddlPayments.DataBind();
         }
-        
+
         private void BindPhotosList()
         {
             lvPhotos.DataSource = Photos;
             lvPhotos.DataBind();
             var lblTotal = lvPhotos.FindControl("lblTotal") as Label;
-            if (lblTotal== null) return;
+            if (lblTotal == null) return;
             lblTotal.Text = Photos.Sum(p => p.TotalPrice).ToString();
         }
 

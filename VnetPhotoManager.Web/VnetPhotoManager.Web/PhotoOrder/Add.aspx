@@ -84,7 +84,6 @@
         </asp:ListView>
         <asp:Button CssClass="btn btn-info" Visible="False" ID="btnOrder" runat="server" Text="Crea Ordine" OnClick="btnOrder_OnClick" />
         <asp:Button CssClass="btn btn-info" ID="btnContinueUpload" runat="server" Text="Aggiungi altra foto" OnClick="btnContinueUpload_OnClick" />
-       <a href="Categories.aspx">vaiiii</a>
     </div>
     <!-- Modal HTML -->
     <div id="addPhotoModal" class="modal fade" role="dialog">
