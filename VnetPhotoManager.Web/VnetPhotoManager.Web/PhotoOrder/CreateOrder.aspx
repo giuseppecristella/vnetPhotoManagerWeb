@@ -1,4 +1,5 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateOrder.aspx.cs" Inherits="VnetPhotoManager.Web.PhotoOrder.CreateOrder" %>
+﻿<%@ Page Title="" Language="C#" enableeventvalidation="false" 
+    viewstateencryptionmode="Never" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateOrder.aspx.cs" Inherits="VnetPhotoManager.Web.PhotoOrder.CreateOrder" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <h2>Ordine</h2>

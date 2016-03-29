@@ -24,7 +24,6 @@ namespace VnetPhotoManager.Web.PhotoOrder
         private readonly PrintFormatRepository _printFormatRepository;
 
         private static PrintFormat _printFormat;
-        private int productId;
         public static string FtpUserFolder { get; private set; }
         public static List<PrintFormat> PrintFormatsLookup { get; set; }
 
@@ -87,38 +86,11 @@ namespace VnetPhotoManager.Web.PhotoOrder
             if (Session["UploadedImage"] == null) return;
             var imageName = Session["UploadedImage"].ToString();
             var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
-            byte[] cropImage;
-            var resizedWidth = 1024;
-            using (var img = System.Drawing.Image.FromFile(string.Format("{0}{1}", path, imageName)))
-            {
-                // Resize, e preview nella finestra modale
-                var w = W.Value.Equals("NaN") || string.IsNullOrEmpty(W.Value) ? img.Width : Convert.ToInt32(W.Value);
-                var h = H.Value.Equals("NaN") || string.IsNullOrEmpty(H.Value) ? img.Height : Convert.ToInt32(H.Value);
-                var x = X.Value.Equals("NaN") || string.IsNullOrEmpty(X.Value) ? 1 : Convert.ToInt32(X.Value);
-                var y = Y.Value.Equals("NaN") || string.IsNullOrEmpty(Y.Value) ? 1 : Convert.ToInt32(Y.Value);
-
-                x = (int)Math.Floor((decimal)(x * ((float)img.Width / resizedWidth)));
-                y = (int)Math.Floor((decimal)(y * ((float)img.Width / resizedWidth)));
-                w = (int)Math.Floor((decimal)(w * ((float)img.Width / resizedWidth)));
-                h = (int)Math.Floor((decimal)(h * ((float)img.Width / resizedWidth)));
-
-                if (x > img.Width) x = img.Width;
-                if (w > img.Width) x = img.Width;
-                if (y > img.Height) y = img.Height;
-                if (h > img.Height) y = img.Height;
-
-                // Calcolo percentuale di ridimensionamento e adeguo le coordinate di ritaglio
-                cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
-                //Path.GetFileNameWithoutExtension(imageName)
-
-                // Cancello la foto resized perchè mi serve solo per l'anteprima
-                File.Delete(string.Format("{0}{1}", path, string.Format("{0}_resized.jpg", Path.GetFileNameWithoutExtension(imageName))));
-            }
-            // Salvo l'immagine ritagliata nella cartella del web server
-            // e la cancello dalla root
+            byte[] croppedImage;
+            croppedImage = GetCroppedImage(path, imageName);
+            // Delete immagine originale, e salvataggio immagine ritagliata
             File.Delete(HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/" + imageName));
-
-            SaveImage(cropImage, path, imageName);
+            SaveImage(croppedImage, path, imageName);
             //UploadFileToFtp(cropImage, imageName, FtpUserFolder);
 
             imgCropped.ImageUrl = string.Format("images/{0}", imageName);
@@ -131,7 +103,8 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 Format = _printFormat.ProductId,
                 FormatDescription = _printFormat.Description,
                 FtpPath = string.Format(@"ftp://{0}/{1}/{2}", _ftpUrl, FtpUserFolder, imageName),
-                UnitPrice = (decimal)_printFormat.Price
+                UnitPrice = (decimal)_printFormat.Price,
+                IsNewPhoto = true
             };
             Photos.Add(PhotoToAdd);
             lvPhotos.DataSource = Photos;
@@ -139,15 +112,52 @@ namespace VnetPhotoManager.Web.PhotoOrder
             imgCropped.ImageUrl = string.Empty;
 
         }
+
+        private byte[] GetCroppedImage(string path, string imageName)
+        {
+            byte[] cropImage;
+            using (var img = System.Drawing.Image.FromFile(string.Format("{0}{1}", path, imageName)))
+            {
+                var resizedWidth = 1024;
+                // Resize, e preview nella finestra modale
+                var w = W.Value.Equals("NaN") || string.IsNullOrEmpty(W.Value) ? img.Width : Convert.ToInt32(W.Value);
+                var h = H.Value.Equals("NaN") || string.IsNullOrEmpty(H.Value) ? img.Height : Convert.ToInt32(H.Value);
+                var x = X.Value.Equals("NaN") || string.IsNullOrEmpty(X.Value) ? 1 : Convert.ToInt32(X.Value);
+                var y = Y.Value.Equals("NaN") || string.IsNullOrEmpty(Y.Value) ? 1 : Convert.ToInt32(Y.Value);
+
+                if (img.Width > resizedWidth)
+                {
+                    x = (int) Math.Floor((decimal) (x*((float) img.Width/resizedWidth)));
+                    y = (int) Math.Floor((decimal) (y*((float) img.Width/resizedWidth)));
+                    w = (int) Math.Floor((decimal) (w*((float) img.Width/resizedWidth)));
+                    h = (int) Math.Floor((decimal) (h*((float) img.Width/resizedWidth)));
+                }
+
+                if (x > img.Width) x = img.Width;
+                if (w > img.Width) x = img.Width;
+                if (y > img.Height) y = img.Height;
+                if (h > img.Height) y = img.Height;
+
+                // Calcolo percentuale di ridimensionamento e adeguo le coordinate di ritaglio
+                cropImage = Crop(string.Format("{0}{1}", path, imageName), w, h, x, y);
+
+                // Cancello la foto resized perchè mi serve solo per l'anteprima
+                File.Delete(string.Format("{0}{1}", path,
+                    string.Format("{0}_resized.jpg", Path.GetFileNameWithoutExtension(imageName))));
+            }
+            return cropImage;
+        }
+
         protected void btnOrder_OnClick(object sender, EventArgs e)
         {
             //Photos.Clear();
-            //foreach (var item in lvPhotos.Items)
-            //{
-            //    BindItemToPhotoVM(item);
-            //}
+            foreach (var item in lvPhotos.Items)
+            {
+                UpdateTotalPrice(item);
+            }
             Response.Redirect("CreateOrder.aspx");
         }
+
         protected void btnAddSavedPhotoToGrid_OnClick(object sender, EventArgs e)
         {
             foreach (ListViewItem row in lvSavedPhotos.Items)
@@ -160,6 +170,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 if (hfFtpPath == null) continue;
                 var lblName = row.FindControl("lblName") as Label;
                 if (lblName == null) continue;
+                btnOrder.Visible = true;
                 PhotoToAdd = new PhotoViewModel
                 {
                     Name = lblName.Text,
@@ -167,7 +178,8 @@ namespace VnetPhotoManager.Web.PhotoOrder
                     FtpPath = hfFtpPath.Value,
                     Format = _printFormat.ProductId,
                     FormatDescription = _printFormat.Description,
-                    UnitPrice = (decimal)_printFormat.Price
+                    UnitPrice = (decimal)_printFormat.Price,
+                    IsNewPhoto = false
                 };
                 Photos.Add(PhotoToAdd);
             }
@@ -235,8 +247,11 @@ namespace VnetPhotoManager.Web.PhotoOrder
             if (string.Equals(e.CommandName, "DeletePhoto"))
             {
                 Photos.Remove(PhotoToAdd);
-                var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
-                File.Delete(string.Format("{0}{1}", path, PhotoToAdd.Name));
+                if (PhotoToAdd.IsNewPhoto)
+                {
+                    var path = HttpContext.Current.Server.MapPath("~/PhotoOrder/Images/");
+                    File.Delete(string.Format("{0}{1}", path, PhotoToAdd.Name));
+                }
                 PhotoToAdd = null;
                 lvPhotos.DataSource = Photos;
                 lvPhotos.DataBind();
@@ -281,7 +296,8 @@ namespace VnetPhotoManager.Web.PhotoOrder
                 Copies = int.Parse(txtCopies.Text),
                 UnitPrice = decimal.Parse(lblPrice.Text),
                 TotalPrice = decimal.Parse(lblPrice.Text) * int.Parse(txtCopies.Text),
-                FtpPath = hfFtpPath.Value
+                FtpPath = hfFtpPath.Value,
+                IsNewPhoto = true
             });
         }
         private void BindPhotosCart()
@@ -293,6 +309,20 @@ namespace VnetPhotoManager.Web.PhotoOrder
         #endregion
 
         #region Private Methods
+        private void UpdateTotalPrice(ListViewDataItem item)
+        {
+            var lblName = item.FindControl("lblName") as Label;
+            if (lblName == null) return;
+            var photo = Photos.FirstOrDefault(p => p.Name.Equals(lblName.Text));
+            if (photo == null) return;
+            var txtCopies = item.FindControl("txtCopies") as TextBox;
+            if (txtCopies == null) return;
+            int copyNumber;
+            if (!int.TryParse(txtCopies.Text, out copyNumber)) return;
+            photo.Copies = copyNumber;
+            photo.TotalPrice = copyNumber*photo.UnitPrice;
+        }
+
         private PrintFormat GetProductInfo(int productId, string userEmail)
         {
             return _printFormatRepository.GetPhotoPrintFormats(userEmail).FirstOrDefault(pf => pf.ProductId.Equals(productId));
@@ -416,6 +446,7 @@ namespace VnetPhotoManager.Web.PhotoOrder
         #endregion
     }
 
+    [Serializable]
     public class PhotoViewModel
     {
         public string Name { get; set; }
@@ -426,5 +457,6 @@ namespace VnetPhotoManager.Web.PhotoOrder
         public decimal UnitPrice { get; set; }
         public string FtpPath { get; set; }
         public string FormatDescription { get; set; }
+        public bool IsNewPhoto { get; set; }
     }
 }

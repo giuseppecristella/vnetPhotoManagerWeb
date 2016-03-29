@@ -79,7 +79,6 @@ namespace VnetPhotoManager.Web.PhotoOrder
 
             var orderId = _orderRepository.SaveOrder(order);
 
-
             foreach (var photo in Photos)
             {
                 // TODO: Update To FTP
