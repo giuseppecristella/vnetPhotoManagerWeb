@@ -14,7 +14,7 @@
     <RootNamespace>VnetPhotoManager.Web</RootNamespace>
     <AssemblyName>VnetPhotoManager.Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -531,6 +531,10 @@
       <Project>{642B8D94-4F36-4D07-8833-C0237BFFC350}</Project>
       <Name>VnetPhotoManager.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\VnetPhotoManager.Infrastructure\VnetPhotoManager.Infrastructure.csproj">
+      <Project>{889ffa47-89fb-4e02-ba48-2a5bcced8dcf}</Project>
+      <Name>VnetPhotoManager.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\VnetPhotoManager.Repository\VnetPhotoManager.Repository.csproj">
       <Project>{33883c28-77df-4888-93bd-f804f17e0447}</Project>
       <Name>VnetPhotoManager.Repository</Name>
@@ -547,7 +551,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>25492</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

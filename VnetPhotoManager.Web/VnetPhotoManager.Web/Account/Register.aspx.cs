@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
+using VnetPhotoManager.Infrastructure;
 
 namespace VnetPhotoManager.Web.Account
 {
@@ -31,7 +32,7 @@ namespace VnetPhotoManager.Web.Account
         public bool CreateUserClient(int clientId, string codiceStruttura, string nome, string cognome, string indirizzo, string citta, string provincia, string cap,
             string nazione, string telefono, string cellulare, string email, string password, DateTime registratoIl, bool attivo)
         {
-            var connetionString = "Data Source=gpaafjxn5d.database.windows.net;Initial Catalog=GestPhoto_Admin;User ID=marco.bianchin;Password=BigDragon99";
+            var connetionString = AppConfiguration.ConnectionString;//"Data Source=gpaafjxn5d.database.windows.net;Initial Catalog=GestPhoto_Admin;User ID=marco.bianchin;Password=BigDragon99";
             using (var connection = new SqlConnection(connetionString))
             {
                 using (var command = new SqlCommand("InsertCliente", connection))
@@ -65,7 +66,7 @@ namespace VnetPhotoManager.Web.Account
         public int CreateUserWithClientCode(string clientCodeFromUI)
         {
             int clientId = 0;
-            var connetionString = "Data Source=gpaafjxn5d.database.windows.net;Initial Catalog=GestPhoto_Admin;User ID=marco.bianchin;Password=BigDragon99";
+            var connetionString = AppConfiguration.ConnectionString; // "Data Source=gpaafjxn5d.database.windows.net;Initial Catalog=GestPhoto_Admin;User ID=marco.bianchin;Password=BigDragon99";
 
             using (var connection = new SqlConnection(connetionString))
             {
